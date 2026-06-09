@@ -1,5 +1,7 @@
 package com.nativa.menu_service.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +10,5 @@ import lombok.Setter;
 public class ProductoRequest {
     private String nombre;
     private String descripcion; 
-    private String precio;
+    private BigDecimal precio;
 }
