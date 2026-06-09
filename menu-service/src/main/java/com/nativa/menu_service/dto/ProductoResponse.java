@@ -15,4 +15,7 @@ public class ProductoResponse {
     private String descripcion; 
     private BigDecimal precio;
     private Boolean disponible;
+
+    private Long categoriaId;
+    private String categoriaNombre;
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
 import com.nativa.menu_service.mapper.ProductoMapper;
+import com.nativa.menu_service.repository.CategoriaRepository;
 import com.nativa.menu_service.repository.ProductoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
     private final ProductoMapper productoMapper;
 
     public List<ProductoResponse> getAllProductos() {
@@ -32,8 +34,12 @@ public class ProductoService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
     }
     
-    public ProductoResponse createProducto(ProductoRequest request) {
+    public ProductoResponse createProducto(ProductoRequest request) {        
+        var categoria = categoriaRepository.findById(request.getCategoriaId())
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
         var producto = productoMapper.toEntity(request);
+        producto.setCategoria(categoria);
         return productoMapper.toResponse(productoRepository.save(producto));
     }
 
@@ -41,9 +47,13 @@ public class ProductoService {
         var producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
+        var categoria = categoriaRepository.findById(request.getCategoriaId())
+        .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        
         producto.setNombre(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
         producto.setPrecio(request.getPrecio());
+        producto.setCategoria(categoria);
 
         return productoMapper.toResponse(productoRepository.save(producto));
     }
