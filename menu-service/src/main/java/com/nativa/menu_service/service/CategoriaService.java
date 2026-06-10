@@ -12,6 +12,7 @@ import com.nativa.menu_service.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+//Lombok se encarga de generar el constructor con los argumentos necesarios para inyectar las dependencias
 @RequiredArgsConstructor
 public class CategoriaService {
 

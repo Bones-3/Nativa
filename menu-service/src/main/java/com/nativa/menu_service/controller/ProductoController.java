@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/productos")
+//Lombok se encarga de generar el constructor con los argumentos necesarios para inyectar las dependencias
 @RequiredArgsConstructor
 public class ProductoController {
  
