@@ -10,5 +10,4 @@ import lombok.Setter;
 public class DetallePedidoRequest {
     private Long ProductoId;
     private Integer cantidad;
-    private BigDecimal precioUnitario;
 }

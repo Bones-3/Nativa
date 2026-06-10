@@ -38,9 +38,6 @@ public class Pedido {
     @Column(name = "total_pagar")
     private BigDecimal totalPagar;
 
-    @Column(name = "tipo_pago") 
-    private String tipoPago;
-
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetallePedido> detalles;
 }
