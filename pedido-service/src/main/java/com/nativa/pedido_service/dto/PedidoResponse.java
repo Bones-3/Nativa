@@ -12,10 +12,8 @@ import lombok.Setter;
 @Builder
 public class PedidoResponse {
     private Long id;
-    private Long UsuarioId;
+    private Long usuarioId;
     private LocalDateTime fechaPedido;
     private String tipoEntrega;
     private BigDecimal totalPagar;
-    private String tipoPago;
-
 }
