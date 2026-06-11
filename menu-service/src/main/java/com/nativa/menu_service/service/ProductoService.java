@@ -3,6 +3,7 @@ package com.nativa.menu_service.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
@@ -21,6 +22,7 @@ public class ProductoService {
     private final CategoriaRepository categoriaRepository;
     private final ProductoMapper productoMapper;
 
+    @Transactional(readOnly = true)
     public List<ProductoResponse> getAllProductos() {
         return productoRepository.findAll()
                 .stream()
@@ -28,12 +30,14 @@ public class ProductoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public ProductoResponse getProductoById(Long id) {
         return productoRepository.findById(id)
                 .map(productoMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
     }
     
+    @Transactional
     public ProductoResponse createProducto(ProductoRequest request) {        
         var categoria = categoriaRepository.findById(request.getCategoriaId())
             .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -43,6 +47,7 @@ public class ProductoService {
         return productoMapper.toResponse(productoRepository.save(producto));
     }
 
+    @Transactional
     public ProductoResponse updateProducto(Long id, ProductoRequest request) {
         var producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
@@ -58,6 +63,7 @@ public class ProductoService {
         return productoMapper.toResponse(productoRepository.save(producto));
     }
 
+    @Transactional
     public void deleteProducto(Long id) {
         var producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
