@@ -15,7 +15,8 @@ public class CategoriaMapper {
 
         categoria.setNombre(request.getNombre());
         categoria.setDescripcion(request.getDescripcion());
-
+        categoria.setDisponible(true);
+        
         return categoria;   
     }
 
