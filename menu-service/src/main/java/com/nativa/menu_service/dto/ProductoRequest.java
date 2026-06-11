@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductoRequest {
+    
     @NotBlank(message = "El nombre del producto es obligatorio")
     private String nombre;
     
