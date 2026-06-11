@@ -7,6 +7,7 @@ import com.nativa.menu_service.dto.CategoriaRequest;
 import com.nativa.menu_service.dto.CategoriaResponse;
 import com.nativa.menu_service.service.CategoriaService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -39,12 +40,12 @@ public class CategoriaController {
     }
 
     @PostMapping()
-    public ResponseEntity<CategoriaResponse> createCategoria(@RequestBody CategoriaRequest categoriaRequest) {
+    public ResponseEntity<CategoriaResponse> createCategoria(@Valid @RequestBody CategoriaRequest categoriaRequest) {
         return ResponseEntity.ok(categoriaService.createCategoria(categoriaRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> updateCategoria(@PathVariable Long id, @RequestBody CategoriaRequest categoriaRequest) {
+    public ResponseEntity<CategoriaResponse> updateCategoria(@PathVariable Long id, @Valid @RequestBody CategoriaRequest categoriaRequest) {
         return ResponseEntity.ok(categoriaService.updateCategoria(id, categoriaRequest));
     }
 

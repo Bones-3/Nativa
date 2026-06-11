@@ -7,6 +7,7 @@ import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
 import com.nativa.menu_service.service.ProductoService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -39,12 +40,12 @@ public class ProductoController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProductoResponse> createProducto(@RequestBody ProductoRequest productoRequest) {
+    public ResponseEntity<ProductoResponse> createProducto(@Valid @RequestBody ProductoRequest productoRequest) {
         return ResponseEntity.ok(productoService.createProducto(productoRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoResponse> updateProducto(@PathVariable Long id, @RequestBody  ProductoRequest productoRequest) {
+    public ResponseEntity<ProductoResponse> updateProducto(@PathVariable Long id, @Valid @RequestBody  ProductoRequest productoRequest) {
         return ResponseEntity.ok(productoService.updateProducto(id, productoRequest));
     }
 
