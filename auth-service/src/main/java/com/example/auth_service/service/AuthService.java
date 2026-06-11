@@ -4,22 +4,20 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.auth_service.model.Credencial;
 import com.example.auth_service.repository.CredencialRepository;
 import com.example.auth_service.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Autowired
-    private CredencialRepository credencialRepository;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final CredencialRepository credencialRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     
