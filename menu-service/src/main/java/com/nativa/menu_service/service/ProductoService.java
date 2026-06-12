@@ -1,6 +1,8 @@
 package com.nativa.menu_service.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
 import com.nativa.menu_service.mapper.ProductoMapper;
+import com.nativa.menu_service.model.Categoria;
+import com.nativa.menu_service.model.Producto;
 import com.nativa.menu_service.repository.CategoriaRepository;
 import com.nativa.menu_service.repository.ProductoRepository;
 
@@ -23,11 +27,27 @@ public class ProductoService {
     private final ProductoMapper productoMapper;
 
     @Transactional(readOnly = true)
+    public List<ProductoResponse> getAllDisponible() {
+        return productoRepository.findByDisponibleTrue()
+                .stream()
+                .map(productoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<ProductoResponse> getAllProductos() {
         return productoRepository.findAll()
                 .stream()
                 .map(productoMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductoResponse> agruparProductosDisponiblesPorCategoria(String nombre) {
+        return productoRepository.findByDisponibleTrueAndCategoria_NombreIgnoreCase(nombre)
+                .stream()
+                .map(productoMapper::toResponse)
+                .toList();    
     }
 
     @Transactional(readOnly = true)

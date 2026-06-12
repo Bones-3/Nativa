@@ -21,6 +21,14 @@ public class CategoriaService {
     private final CategoriaMapper categoriaMapper;
     
     @Transactional(readOnly = true)
+    public List <CategoriaResponse> getCategoriasDisponible() {
+        return categoriaRepository.findByDisponibleTrue()
+                .stream()
+                .map(categoriaMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List <CategoriaResponse> getAllCategorias() {
         return categoriaRepository.findAll()
                 .stream()
