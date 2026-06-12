@@ -1,61 +1,63 @@
 package com.example.auth_service.exception;
 
-import java.time.Instant;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // 400 - Solicitud inválida (correo ya existe, etc.)
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "Bad Request",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    // 401 - Credenciales incorrectas o usuario inactivo
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<?> handleUnauthorized(UnauthorizedException ex) {
-        log.warn("[401] Unauthorized: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-            "status", 401,
-            "error", "Unauthorized",
-            "message", ex.getMessage(),
-            "timestamp", Instant.now()
-        ));
+    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.UNAUTHORIZED.value(),
+            "Unauthorized",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<?> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
-        log.warn("[405] Method not allowed: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of(
-            "status", 405,
-            "error", "Method Not Allowed",
-            "message", ex.getMessage(),
-            "timestamp", Instant.now()
-        ));
+    // 400 - Errores de validación de Bean (@Valid)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        String mensaje = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(e -> e.getField() + ": " + e.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "Validation Error",
+            mensaje
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
-        log.warn("[400] Invalid argument: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-            "status", 400,
-            "error", "Bad Request",
-            "message", ex.getMessage(),
-            "timestamp", Instant.now()
-        ));
-    }
-
+    // 500 - Error genérico
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGenericException(Exception ex) {
-        log.error("[500] Internal server error", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-            "status", 500,
-            "error", "Internal Server Error",
-            "message", "Error interno del servidor",
-            "timestamp", Instant.now()
-        ));
+    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Internal Server Error",
+            "Ocurrió un error inesperado. Contacte al administrador."
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

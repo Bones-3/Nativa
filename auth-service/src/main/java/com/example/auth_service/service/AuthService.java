@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.auth_service.model.Credencial;
 import com.example.auth_service.repository.CredencialRepository;
@@ -15,12 +16,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    
     private final CredencialRepository credencialRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
-    
+@Transactional
 public String login(String correo, String password) {
     Optional<Credencial> credencialOpt = credencialRepository.findByCorreoUser(correo);
     
@@ -41,6 +43,7 @@ public String login(String correo, String password) {
     return jwtUtil.generarToken(correo);
 }
 
+@Transactional
 public String register(String correo, String password) {
     Optional<Credencial> existente = credencialRepository.findByCorreoUser(correo);
     
