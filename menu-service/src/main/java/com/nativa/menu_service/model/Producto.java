@@ -27,16 +27,16 @@ public class Producto {
     @Column(name = "id_producto")
     private Long id;
 
-    @Column(name =  "nombre")
+    @Column(name =  "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", nullable = false)
     private String descripcion;
     
-    @Column(name = "precio")
+    @Column(name = "precio", nullable = false, precision = 10, scale = 0)
     private BigDecimal precio;
     
-    @Column(name = "disponible")
+    @Column(name = "disponible", nullable = false)
     private Boolean disponible;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

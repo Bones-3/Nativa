@@ -22,7 +22,7 @@ public class Categoria {
     @Column(name = "id_categoria")
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @Column(name = "disponible")
