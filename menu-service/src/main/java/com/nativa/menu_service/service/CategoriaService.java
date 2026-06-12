@@ -55,7 +55,6 @@ public class CategoriaService {
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         categoria.setNombre(request.getNombre());
-        categoria.setDescripcion(request.getDescripcion());
 
         return categoriaMapper.toResponse(categoriaRepository.save(categoria));
     }

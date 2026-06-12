@@ -14,7 +14,6 @@ public class CategoriaMapper {
         Categoria categoria = new Categoria();
 
         categoria.setNombre(request.getNombre());
-        categoria.setDescripcion(request.getDescripcion());
         categoria.setDisponible(true);
         
         return categoria;   
@@ -25,7 +24,6 @@ public class CategoriaMapper {
         return CategoriaResponse.builder()
                 .id(categoria.getId())
                 .nombre(categoria.getNombre())
-                .descripcion(categoria.getDescripcion())
                 .disponible(categoria.getDisponible())
                 .build();
     }
