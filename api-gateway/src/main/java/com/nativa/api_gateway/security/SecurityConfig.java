@@ -49,7 +49,7 @@ public class SecurityConfig {
                             return resp.writeWith(Mono.just(buf));
                         })
                 )
- 
+                
                 // ── Reglas de acceso ─────────────────────────────────────────────────
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
