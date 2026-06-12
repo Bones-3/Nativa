@@ -29,10 +29,15 @@ public class CategoriaController {
     private final CategoriaService categoriaService;
 
     @GetMapping()
+    public ResponseEntity<List<CategoriaResponse>> getCategoriasDisponible() {
+        return ResponseEntity.ok(categoriaService.getCategoriasDisponible());
+    }
+    
+    @GetMapping("/all")
     public ResponseEntity<List<CategoriaResponse>> getAllCategorias() {
         return ResponseEntity.ok(categoriaService.getAllCategorias());
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaResponse> getCategoriaById(@PathVariable Long id) {
         return ResponseEntity.ok(categoriaService.getCategoriaById(id));

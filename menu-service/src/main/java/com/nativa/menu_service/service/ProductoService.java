@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
 import com.nativa.menu_service.mapper.ProductoMapper;
-import com.nativa.menu_service.model.Categoria;
-import com.nativa.menu_service.model.Producto;
 import com.nativa.menu_service.repository.CategoriaRepository;
 import com.nativa.menu_service.repository.ProductoRepository;
 

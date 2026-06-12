@@ -29,6 +29,16 @@ public class ProductoController {
     private final ProductoService productoService;
 
     @GetMapping()
+    public ResponseEntity<List<ProductoResponse>> getProductosDisponibles() {
+        return ResponseEntity.ok(productoService.getAllDisponible());
+    }
+
+    @GetMapping("/{nombre}")
+    public ResponseEntity<List<ProductoResponse>> getProductosByCategoria(String nombre) {
+        return ResponseEntity.ok(productoService.agruparProductosDisponiblesPorCategoria(nombre));
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<List<ProductoResponse>> getAllProductos() {
         return ResponseEntity.ok(productoService.getAllProductos());
     }
