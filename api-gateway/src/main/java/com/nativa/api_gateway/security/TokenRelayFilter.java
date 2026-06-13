@@ -16,22 +16,25 @@ public class TokenRelayFilter implements GatewayFilter{
  
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        String path = exchange.getRequest().getPath().toString();
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
- 
-        // Sin token → continuar sin modificar (rutas públicas)
+
+        log.info("[TokenRelayFilter] path: {} | Authorization header: {}", path,
+                authHeader != null ? "PRESENTE" : "AUSENTE");
+
         if (authHeader == null) {
+            log.info("[TokenRelayFilter] Sin Authorization header → sin relay");
             return chain.filter(exchange);
         }
- 
-        log.debug("Relaying Authorization header to downstream service");
- 
+
+        log.info("[TokenRelayFilter] Relaying Authorization header al microservicio downstream");
         ServerHttpRequest mutatedRequest = exchange.getRequest()
                 .mutate()
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .build();
- 
+
         return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 }

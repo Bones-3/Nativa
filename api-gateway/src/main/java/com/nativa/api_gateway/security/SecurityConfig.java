@@ -1,6 +1,7 @@
 package com.nativa.api_gateway.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import org.springframework.context.annotation.Bean;
@@ -13,33 +14,36 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+@Slf4j
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
- 
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        log.info("[SecurityConfig] Configurando SecurityWebFilterChain...");
         return http
-                // ── API REST stateless: deshabilitar sesiones ────────────────────────
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
- 
-                // ── Respuestas de error en JSON (no redirect de Spring Security) ──────
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((exchange, e) -> {
+                            log.error("[SecurityConfig] authenticationEntryPoint disparado → path: {} | error: {}",
+                                    exchange.getRequest().getPath(), e.getMessage());
                             var resp = exchange.getResponse();
                             resp.setStatusCode(HttpStatus.UNAUTHORIZED);
                             resp.getHeaders().setContentType(MediaType.APPLICATION_JSON);
                             var buf = resp.bufferFactory().wrap(
-                                    "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Autenticaci\u00f3n requerida\"}"
+                                    "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Autenticación requerida\"}"
                                             .getBytes());
                             return resp.writeWith(Mono.just(buf));
                         })
                         .accessDeniedHandler((exchange, e) -> {
+                            log.error("[SecurityConfig] accessDeniedHandler disparado → path: {} | error: {}",
+                                    exchange.getRequest().getPath(), e.getMessage());
                             var resp = exchange.getResponse();
                             resp.setStatusCode(HttpStatus.FORBIDDEN);
                             resp.getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -49,16 +53,16 @@ public class SecurityConfig {
                             return resp.writeWith(Mono.just(buf));
                         })
                 )
- 
-                // ── Reglas de acceso ─────────────────────────────────────────────────
-                .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                        .pathMatchers("/actuator/health").permitAll()
-                        .anyExchange().authenticated()
-                )
- 
-                // ── Filtro JWT antes de la capa de autenticación de Spring Security ──
+                .authorizeExchange(exchanges -> {
+                    log.info("[SecurityConfig] Registrando reglas de autorización...");
+                    log.info("[SecurityConfig]   POST /api/auth/login  → permitAll");
+                    log.info("[SecurityConfig]   POST /api/auth/register → permitAll");
+                    log.info("[SecurityConfig]   anyExchange → authenticated");
+                    exchanges
+                            .pathMatchers(HttpMethod.POST, "api/auth/login").permitAll()
+                            .pathMatchers(HttpMethod.POST, "api/auth/register").permitAll()
+                            .anyExchange().authenticated();
+                })
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }

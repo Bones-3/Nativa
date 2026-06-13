@@ -3,15 +3,21 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/api/auth/**
-        - id: menu-service
-          uri: lb://menu-service
-          predicates:
-            - Path=/api/menu/**
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=1
+            - id: menu-service
+              uri: lb://menu-service
+              predicates:
+                - Path=/api/menu/**
+              filters:
+                - StripPrefix=1
 
 server:
   port: 8080
@@ -22,3 +28,11 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: a98ba831524d428bdb59b2a9342de0716eaa901463593fb888e58001f522c74d
+  expiration: 86400000
+
+logging:
+  level:
+    com.nativa.api_gateway: DEBUG

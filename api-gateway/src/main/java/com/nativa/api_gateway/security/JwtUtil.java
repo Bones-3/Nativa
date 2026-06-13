@@ -2,7 +2,6 @@ package com.nativa.api_gateway.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -16,46 +15,58 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Component
 public class JwtUtil {
- 
+
     @Value("${jwt.secret}")
     private String secret;
- 
-    // ── Clave HMAC-SHA derivada del secreto en application.yml ───────────────
+
     private SecretKey signingKey() {
+        log.debug("[JwtUtil] Generando signing key (longitud secret: {} chars)", secret != null ? secret.length() : "NULL");
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
- 
-    // ── jjwt 0.12.x: parser() · verifyWith() · parseSignedClaims() · getPayload()
+
     public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
- 
-    public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
-    }
- 
-    @SuppressWarnings("unchecked")
-    public List<String> extractRoles(String token) {
-        return (List<String>) extractAllClaims(token).get("roles");
-    }
- 
-    public boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
-    }
- 
-    public boolean validateToken(String token) {
+        log.info("[JwtUtil] Extrayendo claims del token...");
         try {
-            return !isTokenExpired(token);
+            Claims claims = Jwts.parser()
+                    .verifyWith(signingKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            log.info("[JwtUtil] Claims extraídos → subject: {}, exp: {}", claims.getSubject(), claims.getExpiration());
+            return claims;
+        } catch (Exception e) {
+            log.error("[JwtUtil] Error extrayendo claims: {} - {}", e.getClass().getName(), e.getMessage());
+            throw e;
+        }
+    }
+
+    public String extractUsername(String token) {
+        String username = extractAllClaims(token).getSubject();
+        log.info("[JwtUtil] Username extraído: {}", username);
+        return username;
+    }
+
+    public boolean isTokenExpired(String token) {
+        boolean expired = extractAllClaims(token).getExpiration().before(new Date());
+        log.info("[JwtUtil] ¿Token expirado? {}", expired);
+        return expired;
+    }
+
+    public boolean validateToken(String token) {
+        log.info("[JwtUtil] Iniciando validación de token...");
+        try {
+            boolean valid = !isTokenExpired(token);
+            log.info("[JwtUtil] Token válido: {}", valid);
+            return valid;
         } catch (ExpiredJwtException e) {
+            log.error("[JwtUtil] Token EXPIRADO: {}", e.getMessage());
             throw new UnauthorizedException("Token expirado");
         } catch (JwtException | IllegalArgumentException e) {
+            log.error("[JwtUtil] Token INVÁLIDO o malformado: {} - {}", e.getClass().getName(), e.getMessage());
             throw new UnauthorizedException("Token inválido o malformado");
         }
     }
