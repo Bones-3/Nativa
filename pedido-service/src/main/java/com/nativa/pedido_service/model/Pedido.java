@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    @Column(name = "id_producto")
+    @Column(name = "id_pedido")
     private Long id;
 
     @Column(name = "usuario_id")
