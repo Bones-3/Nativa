@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: reserva-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_reserva_service
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: 8082
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: ${JWT_SECRET:a98ba831524d428bdb59b2a9342de0716eaa901463593fb888e58001f522c74d}
+  expiration: ${JWT_EXPIRATION:86400000}
