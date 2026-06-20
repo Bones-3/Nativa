@@ -24,6 +24,12 @@ spring:
                 - Path=/api/inventario/**
               filters:
                 - StripPrefix=1
+            - id: reserva-service
+              uri: lb://RESERVA-SERVICE
+              predicates:
+                - Path=/api/reserva/**
+              filters:
+                - StripPrefix=1
 
 server:
   port: 8080
