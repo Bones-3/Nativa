@@ -10,12 +10,12 @@ import com.nativa.pedido_service.model.DetallePedido;
 public class DetallePedidoMapper {
     public DetallePedido toEntity(DetallePedidoRequest request) {
 
-        DetallePedido categoria = new DetallePedido();
+        DetallePedido detallePedido = new DetallePedido();
 
-        categoria.setProductoId(request.getProductoId());
-        categoria.setCantidad(request.getCantidad());
+        detallePedido.setProductoId(request.getProductoId());
+        detallePedido.setCantidad(request.getCantidad());
 
-        return categoria;   
+        return detallePedido;   
     }
 
     public DetallePedidoResponse toResponse(DetallePedido detallePedido) {

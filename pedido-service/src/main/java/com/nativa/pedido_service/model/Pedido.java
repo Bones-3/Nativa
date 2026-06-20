@@ -35,6 +35,12 @@ public class Pedido {
     @Column(name = "tipo_entrega")
     private String tipoEntrega;
 
+    @Column(name = "subtotal")
+    private BigDecimal subtotal;
+
+    @Column(name = "iva")
+    private BigDecimal iva;
+
     @Column(name = "total_pagar")
     private BigDecimal totalPagar;
 
