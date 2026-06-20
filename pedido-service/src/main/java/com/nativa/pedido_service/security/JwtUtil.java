@@ -1,4 +1,4 @@
-package com.nativa.menu_service.security;
+package com.nativa.pedido_service.security;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package com.nativa.menu_service.exception;
+package com.nativa.pedido_service.exception;
 
 import java.time.OffsetDateTime;
 import java.util.stream.Collectors;

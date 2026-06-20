@@ -1,4 +1,4 @@
-package com.nativa.menu_service.security;
+package com.nativa.pedido_service.security;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
