@@ -13,9 +13,15 @@ spring:
               filters:
                 - StripPrefix=1
             - id: menu-service
-              uri: lb://menu-service
+              uri: lb://MENU-SERVICE
               predicates:
                 - Path=/api/menu/**
+              filters:
+                - StripPrefix=1
+            - id: inventario-service
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/inventario/**
               filters:
                 - StripPrefix=1
 
