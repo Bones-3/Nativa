@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/menu/productos")
 //Lombok se encarga de generar el constructor con los argumentos necesarios para inyectar las dependencias
 @RequiredArgsConstructor
 public class ProductoController {
@@ -33,8 +33,8 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.getAllDisponible());
     }
 
-    @GetMapping("/{nombre}")
-    public ResponseEntity<List<ProductoResponse>> getProductosByCategoria(String nombre) {
+    @GetMapping("/categoria/{nombre}")
+    public ResponseEntity<List<ProductoResponse>> getProductosByCategoria(@PathVariable String nombre) {
         return ResponseEntity.ok(productoService.agruparProductosDisponiblesPorCategoria(nombre));
     }
 
