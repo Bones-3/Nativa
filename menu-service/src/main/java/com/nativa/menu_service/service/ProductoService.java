@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
+import com.nativa.menu_service.exception.ResourceNotFoundException;
 import com.nativa.menu_service.mapper.ProductoMapper;
 import com.nativa.menu_service.repository.CategoriaRepository;
 import com.nativa.menu_service.repository.ProductoRepository;
@@ -50,13 +51,13 @@ public class ProductoService {
     public ProductoResponse getProductoById(Long id) {
         return productoRepository.findById(id)
                 .map(productoMapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
     }
     
     @Transactional
     public ProductoResponse createProducto(ProductoRequest request) {        
         var categoria = categoriaRepository.findById(request.getCategoriaId())
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         var producto = productoMapper.toEntity(request);
         producto.setCategoria(categoria);
@@ -66,10 +67,10 @@ public class ProductoService {
     @Transactional
     public ProductoResponse updateProducto(Long id, ProductoRequest request) {
         var producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
         var categoria = categoriaRepository.findById(request.getCategoriaId())
-        .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         
         producto.setNombre(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
@@ -82,7 +83,7 @@ public class ProductoService {
     @Transactional
     public void deleteProducto(Long id) {
         var producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
         producto.setDisponible(false);
         productoRepository.save(producto);

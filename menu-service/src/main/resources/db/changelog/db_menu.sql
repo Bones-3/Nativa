@@ -40,4 +40,4 @@ INSERT INTO producto (nombre, descripcion, precio, disponible, categoria_id) VAL
 ('Bebida en Lata 350cc', 'Coca-Cola, Sprite o Fanta helada', 1800, true, 5),
 ('Pisco Sour Catedral', 'Receta de la casa con pisco peruano y limón sutil', 5200, true, 5),
 ('Churrasco Italiano', 'Finas láminas de carne, palta molida, tomate y mayonesa casera en pan frica', 7900, true, 7),
-('Porción de Palta', 'Agregado de palta extra molida para tus platos o sánguches', 1500, true, 9);
+('Porción de Palta', 'Agregado de palta extra molida para tus platos o sánguches', 1500, true, 8);

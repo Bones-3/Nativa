@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Component("jwtFilter")
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(

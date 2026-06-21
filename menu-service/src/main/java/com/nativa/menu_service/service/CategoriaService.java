@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nativa.menu_service.dto.CategoriaRequest;
 import com.nativa.menu_service.dto.CategoriaResponse;
+import com.nativa.menu_service.exception.ResourceNotFoundException;
 import com.nativa.menu_service.mapper.CategoriaMapper;
 import com.nativa.menu_service.repository.CategoriaRepository;
 
@@ -40,7 +41,7 @@ public class CategoriaService {
     public CategoriaResponse getCategoriaById(Long id) {
         return categoriaRepository.findById(id)
                 .map(categoriaMapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
     }
 
     @Transactional
@@ -52,7 +53,7 @@ public class CategoriaService {
     @Transactional
     public CategoriaResponse updateCategoria(Long id, CategoriaRequest request) {
         var categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         categoria.setNombre(request.getNombre());
 
@@ -62,7 +63,7 @@ public class CategoriaService {
     @Transactional
     public void deleteCategoria(Long id) {
         var categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         categoria.setDisponible(false);
         categoriaRepository.save(categoria);
