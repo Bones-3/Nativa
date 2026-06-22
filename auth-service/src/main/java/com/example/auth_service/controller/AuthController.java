@@ -9,15 +9,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.auth_service.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Autenticación", description = "Operaciones de login y registro")
 public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "Iniciar sesión", description = "Autentica un usuario y retorna un token JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso"),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content)
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String correo = body.get("correo");
@@ -37,6 +48,11 @@ public class AuthController {
         ));
     }
 
+    @Operation(summary = "Registrar usuario", description = "Crea una nueva credencial en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Registro exitoso"),
+        @ApiResponse(responseCode = "400", description = "Usuario ya existe o correo inválido", content = @Content)
+    })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         String correo = body.get("correo");
