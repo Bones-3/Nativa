@@ -70,11 +70,17 @@
 			<scope>runtime</scope> 
 		</dependency>
 
-		<!-- Fin Dependencias JWT -->
+		<!-- Dependencias HATEOAS -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+		<!-- Inicio Dependencia HATEOAS -->	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<!-- Fin Dependencia HATEOAS -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

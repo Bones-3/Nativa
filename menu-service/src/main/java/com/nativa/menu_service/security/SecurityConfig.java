@@ -26,6 +26,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> 
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(
+                        "/auth/**",
+                        "/v3/api-docs/**",    // el path que pusiste en api-docs.path (con /** para subpaths)
+                        "/swagger-ui/**",     // donde Springdoc sirve los assets internos
+                        "/swagger-ui.html"    // el path que pusiste en swagger-ui.path
+                    ).permitAll()
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
