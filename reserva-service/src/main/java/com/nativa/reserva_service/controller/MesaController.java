@@ -1,7 +1,10 @@
 package com.nativa.reserva_service.controller;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nativa.reserva_service.assemblers.MesaModelAssembler;
 import com.nativa.reserva_service.dto.MesaRequest;
 import com.nativa.reserva_service.dto.MesaResponse;
 import com.nativa.reserva_service.service.MesaService;
@@ -25,20 +29,35 @@ import lombok.RequiredArgsConstructor;
 public class MesaController {
 
     private final MesaService mesaService;
+    private final MesaModelAssembler assembler;
 
-    @GetMapping
-    public ResponseEntity<List<MesaResponse>> getMesasDisponibles() {
-        return ResponseEntity.ok(mesaService.getMesasDisponibles());
-    }
+
 
     @GetMapping("/all")
-    public ResponseEntity<List<MesaResponse>> getAllMesas() {
-        return ResponseEntity.ok(mesaService.getAllMesas());
+    public ResponseEntity<CollectionModel<EntityModel<MesaResponse>>> getAllMesas() {
+        List<EntityModel<MesaResponse>> mesa = mesaService.getAllMesas()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(mesa,
+                linkTo(methodOn(MesaController.class).getAllMesas()).withSelfRel()));
     }
 
+    @GetMapping
+    public ResponseEntity<CollectionModel<EntityModel<MesaResponse>>> getMesasDisponibles() {
+        List<EntityModel<MesaResponse>> mesa = mesaService.getMesasDisponibles()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(mesa,
+                linkTo(methodOn(MesaController.class).getMesasDisponibles()).withSelfRel()));
+    }
+    
     @GetMapping("/{id}")
-    public ResponseEntity<MesaResponse> getMesaById(@PathVariable Long id) {
-        return ResponseEntity.ok(mesaService.getMesaById(id));
+    public ResponseEntity<EntityModel<MesaResponse>>getMesaById(@PathVariable Long id) {
+        return ResponseEntity.ok(assembler.toModel(mesaService.getMesaById(id)));
     }
 
     @PostMapping
