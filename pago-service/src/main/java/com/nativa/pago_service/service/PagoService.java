@@ -11,6 +11,7 @@ import com.nativa.pago_service.client.dto.PedidoResponse;
 import com.nativa.pago_service.client.dto.UsuarioResponse;
 import com.nativa.pago_service.dto.PagoRequest;
 import com.nativa.pago_service.dto.PagoResponse;
+import com.nativa.pago_service.exception.ResourceNotFoundException;
 import com.nativa.pago_service.mapper.PagoMapper;
 import com.nativa.pago_service.model.Pago;
 import com.nativa.pago_service.repository.PagoRepository;
@@ -44,14 +45,14 @@ public class PagoService {
             usuarioClient.obtenerPorId(request.getUsuario_id());
 
         if (usuario == null) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new ResourceNotFoundException("Usuario no encontrado");
         }
         
         PedidoResponse pedido =
             pedidoClient.obtenerPorId(request.getPedido_id());
 
         if (pedido == null) {
-            throw new RuntimeException("Pedido no encontrado");
+            throw new ResourceNotFoundException("Pedido no encontrado");
         }
 
         Pago pago = pagoMapper.toEntity(request);
