@@ -1,15 +1,14 @@
 package com.nativa.usuario_service.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nativa.usuario_service.dto.UsuarioRequest;
 import com.nativa.usuario_service.dto.UsuarioResponse;
+import com.nativa.usuario_service.exception.ResourceNotFoundException;
 import com.nativa.usuario_service.mapper.UsuarioMapper;
-import com.nativa.usuario_service.model.Usuario;
 import com.nativa.usuario_service.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,10 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Usuario> findById(Long id) {
-        return usuarioRepository.findById(id);
+    public UsuarioResponse getUsuarioById(Long id) {
+        return usuarioRepository.findById(id)
+                .map(usuarioMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse updateUsuario(Long id,UsuarioRequest request) {
         var usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         
         usuario.setCorreoUsuario(request.getCorreoUsuario());
         usuario.setNombre(request.getNombre());  
@@ -56,7 +57,7 @@ public class UsuarioService {
     @Transactional
     public void deleteUsuario(Long id) {
         var usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         usuario.setEstadoUsuario(false);
         usuarioRepository.save(usuario);
