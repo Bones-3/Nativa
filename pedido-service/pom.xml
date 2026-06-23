@@ -83,6 +83,13 @@
 			<version>3.0.2</version>
 		</dependency>
 		<!-- Fin Swagger -->
+		
+		<!-- Inicio Dependencia HATEOAS -->	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<!-- Fin Dependencia HATEOAS -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

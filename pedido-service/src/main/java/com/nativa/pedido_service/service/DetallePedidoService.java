@@ -10,6 +10,7 @@ import com.nativa.pedido_service.client.ProductoClient;
 import com.nativa.pedido_service.client.dto.ProductoResponse;
 import com.nativa.pedido_service.dto.DetallePedidoRequest;
 import com.nativa.pedido_service.dto.DetallePedidoResponse;
+import com.nativa.pedido_service.exception.ResourceNotFoundException;
 import com.nativa.pedido_service.mapper.DetallePedidoMapper;
 import com.nativa.pedido_service.model.DetallePedido;
 import com.nativa.pedido_service.model.Pedido;
@@ -37,10 +38,20 @@ public class DetallePedidoService {
     }
     
     @Transactional(readOnly = true)
+    public List<DetallePedidoResponse> getDetallePedidoByPedidoId (Long id) {
+        if (!pedidoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Pedido no encontrado con id: " + id);
+        }
+        return detallePedidoRepository.findByPedidoId(id)
+                .stream()
+                .map(detallePedidoMapper::toResponse)
+                .toList();
+    }
+
     public DetallePedidoResponse getDetallePedidoById (Long id) {
         return detallePedidoRepository.findById(id)
                 .map(detallePedidoMapper::toResponse)
-                .orElseThrow(()-> new RuntimeException("El detalle no se encontra"));
+                .orElseThrow(() -> new ResourceNotFoundException("Detalle pedido no encontrado"));            
     }
 
     @Transactional
@@ -49,11 +60,11 @@ public class DetallePedidoService {
         ProductoResponse producto = productoClient.obtenerProductoPorId(detallePedidoRequest.getProductoId());
 
         if (Boolean.FALSE.equals(producto.getDisponible())) {
-            throw new RuntimeException("El producto no está disponible");
+            throw new ResourceNotFoundException("El producto no está disponible");
         }
 
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado"));
 
         detallePedido.setPedido(pedido);
         detallePedido.setPrecioUnitario(producto.getPrecio());
@@ -75,11 +86,11 @@ public class DetallePedidoService {
     @Transactional
     public DetallePedidoResponse updateDetallePedidoResponse(Long id, DetallePedidoRequest request) {
         var detallePedido = detallePedidoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("El detalle no se encuentra"));
+                .orElseThrow(()-> new ResourceNotFoundException("El detalle no se encuentra"));
         ProductoResponse producto = productoClient.obtenerProductoPorId(request.getProductoId());
 
         if (Boolean.FALSE.equals(producto.getDisponible())) {
-            throw new RuntimeException("El producto no está disponible");
+            throw new ResourceNotFoundException("El producto no está disponible");
         }
 
         detallePedido.setProductoId(request.getProductoId());
@@ -103,7 +114,7 @@ public class DetallePedidoService {
     public void deleteDetallePedido(Long id) {
         DetallePedido detalle = detallePedidoRepository.findById(id)
             .orElseThrow(() ->
-                new RuntimeException("Detalle no encontrado"));
+                new ResourceNotFoundException("Detalle no encontrado"));
         
                 Long pedidoId = detalle.getPedido().getId();
 

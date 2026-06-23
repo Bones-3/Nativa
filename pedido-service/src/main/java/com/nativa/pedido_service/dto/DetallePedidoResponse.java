@@ -12,6 +12,7 @@ import lombok.Setter;
 public class DetallePedidoResponse {
     private Long id;
     private Long productoId;
+    private Long pedidoId;
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;

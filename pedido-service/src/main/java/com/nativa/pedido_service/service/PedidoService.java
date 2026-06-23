@@ -9,10 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nativa.pedido_service.client.UsuarioClient;
 import com.nativa.pedido_service.client.dto.UsuarioResponse;
-import com.nativa.pedido_service.dto.DetallePedidoRequest;
-import com.nativa.pedido_service.dto.DetallePedidoResponse;
 import com.nativa.pedido_service.dto.PedidoRequest;
 import com.nativa.pedido_service.dto.PedidoResponse;
+import com.nativa.pedido_service.exception.ResourceNotFoundException;
 import com.nativa.pedido_service.mapper.PedidoMapper;
 import com.nativa.pedido_service.model.DetallePedido;
 import com.nativa.pedido_service.model.Pedido;
@@ -41,17 +40,17 @@ public class PedidoService {
     public PedidoResponse getPedidoById(Long id) {
         return pedidoRepository.findById(id)
                 .map(pedidoMapper::toResponse)
-                .orElseThrow(()-> new RuntimeException("Pedido no encontrado"));
+                .orElseThrow(()-> new ResourceNotFoundException("Pedido no encontrado"));
     }
 
     @Transactional
-    public PedidoResponse createPedidoResponse(Long pedidoId, PedidoRequest request) {
+    public PedidoResponse createPedidoResponse(PedidoRequest request) {
 
     UsuarioResponse usuario =
             usuarioClient.obtenerPorId(request.getUsuarioId());
 
     if (usuario == null) {
-        throw new RuntimeException("Usuario no encontrado");
+        throw new ResourceNotFoundException("Usuario no encontrado");
     }
 
     Pedido pedido = pedidoMapper.toEntity(request);
@@ -78,7 +77,7 @@ public class PedidoService {
     public void recalcularTotales(Long pedidoId) {
 
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado"));
 
         BigDecimal subtotal = detallePedidoRepository
                 .findByPedidoId(pedidoId)

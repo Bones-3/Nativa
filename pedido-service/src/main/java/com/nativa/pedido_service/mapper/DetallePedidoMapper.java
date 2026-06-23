@@ -11,7 +11,6 @@ public class DetallePedidoMapper {
     public DetallePedido toEntity(DetallePedidoRequest request) {
 
         DetallePedido detallePedido = new DetallePedido();
-
         detallePedido.setProductoId(request.getProductoId());
         detallePedido.setCantidad(request.getCantidad());
 
@@ -23,6 +22,7 @@ public class DetallePedidoMapper {
         return DetallePedidoResponse.builder()
                 .id(detallePedido.getId())
                 .productoId(detallePedido.getProductoId())
+                .pedidoId(detallePedido.getPedido().getId())
                 .cantidad(detallePedido.getCantidad())
                 .precioUnitario(detallePedido.getPrecioUnitario())
                 .subtotal(detallePedido.getSubtotal())
