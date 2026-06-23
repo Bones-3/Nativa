@@ -20,6 +20,8 @@ public class ProductoModelAssembler implements RepresentationModelAssembler<Prod
             // Link a la colección completa
             linkTo(methodOn(ProductoController.class).getAllProductos()).withRel("productos"),
             // Link a solo los disponibles
-            linkTo(methodOn(ProductoController.class).getProductosDisponibles()).withRel("productos-disponibles"));
+            linkTo(methodOn(ProductoController.class).getProductosDisponibles()).withRel("productos-disponibles"),
+            // Link a solo los disponibles por categoria
+            linkTo(methodOn(ProductoController.class).getProductosByCategoria(producto.getCategoriaNombre())).withRel("productos-disponibles"));
     }
 }

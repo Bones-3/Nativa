@@ -3,6 +3,9 @@ package com.nativa.menu_service.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import com.nativa.menu_service.assemblers.ProductoModelAssembler;
 import com.nativa.menu_service.dto.ProductoRequest;
 import com.nativa.menu_service.dto.ProductoResponse;
 import com.nativa.menu_service.service.ProductoService;
@@ -12,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,25 +32,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ProductoController {
  
     private final ProductoService productoService;
+    private final ProductoModelAssembler assembler;
 
     @GetMapping()
-    public ResponseEntity<List<ProductoResponse>> getProductosDisponibles() {
-        return ResponseEntity.ok(productoService.getAllDisponible());
+    public ResponseEntity<CollectionModel<EntityModel<ProductoResponse>>> getProductosDisponibles() {
+        List<EntityModel<ProductoResponse>> producto = productoService.getAllDisponible()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(producto,
+                linkTo(methodOn(ProductoController.class).getAllProductos()).withSelfRel()));
     }
 
     @GetMapping("/categoria/{nombre}")
-    public ResponseEntity<List<ProductoResponse>> getProductosByCategoria(@PathVariable String nombre) {
-        return ResponseEntity.ok(productoService.agruparProductosDisponiblesPorCategoria(nombre));
+    public ResponseEntity<CollectionModel<EntityModel<ProductoResponse>>> getProductosByCategoria(@PathVariable String nombre) {
+        List<EntityModel<ProductoResponse>> producto = productoService.agruparProductosDisponiblesPorCategoria(nombre)
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(producto,
+                linkTo(methodOn(ProductoController.class).getProductosByCategoria(nombre)).withSelfRel()));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductoResponse>> getAllProductos() {
-        return ResponseEntity.ok(productoService.getAllProductos());
+    public ResponseEntity<CollectionModel<EntityModel<ProductoResponse>>> getAllProductos() {
+        List<EntityModel<ProductoResponse>> producto = productoService.getAllProductos()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(producto,
+                linkTo(methodOn(ProductoController.class).getAllProductos()).withSelfRel()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoResponse> getProductoById(@PathVariable Long id) {    
-        return ResponseEntity.ok(productoService.getProductoById(id));
+    public ResponseEntity<EntityModel<ProductoResponse>> getProductoById(@PathVariable Long id) {    
+        return ResponseEntity.ok(assembler.toModel(productoService.getProductoById(id)));
     }
 
     @PostMapping()

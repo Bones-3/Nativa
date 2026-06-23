@@ -1,8 +1,11 @@
 package com.nativa.menu_service.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nativa.menu_service.assemblers.CategoriaModelAssembler;
 import com.nativa.menu_service.dto.CategoriaRequest;
 import com.nativa.menu_service.dto.CategoriaResponse;
 import com.nativa.menu_service.service.CategoriaService;
@@ -12,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,20 +32,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
+    private final CategoriaModelAssembler assembler;
 
-    @GetMapping()
-    public ResponseEntity<List<CategoriaResponse>> getCategoriasDisponible() {
-        return ResponseEntity.ok(categoriaService.getCategoriasDisponible());
+    public ResponseEntity<CollectionModel<EntityModel<CategoriaResponse>>> getCategoriasDisponible() {
+        List<EntityModel<CategoriaResponse>> categoria = categoriaService.getCategoriasDisponible()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+
+        return ResponseEntity.ok(CollectionModel.of(categoria,
+                linkTo(methodOn(CategoriaController.class).getCategoriasDisponible()).withSelfRel()));
     }
-    
+
     @GetMapping("/all")
-    public ResponseEntity<List<CategoriaResponse>> getAllCategorias() {
-        return ResponseEntity.ok(categoriaService.getAllCategorias());
+    public ResponseEntity<CollectionModel<EntityModel<CategoriaResponse>>> getAllCategorias() {
+        List<EntityModel<CategoriaResponse>> categoria = categoriaService.getAllCategorias()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+        
+        return ResponseEntity.ok(CollectionModel.of(categoria,
+                linkTo(methodOn(CategoriaController.class).getAllCategorias()).withSelfRel()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> getCategoriaById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoriaService.getCategoriaById(id));
+    public ResponseEntity<EntityModel<CategoriaResponse>> getCategoriaById(@PathVariable Long id) {
+        return ResponseEntity.ok(assembler.toModel(categoriaService.getCategoriaById(id)));
     }
 
     @PostMapping()

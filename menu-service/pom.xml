@@ -69,8 +69,8 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope> 
 		</dependency>
-
-		<!-- Dependencias HATEOAS -->
+		
+		<!-- Fin Dependencias JWT -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
