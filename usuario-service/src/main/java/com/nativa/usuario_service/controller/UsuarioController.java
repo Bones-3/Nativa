@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nativa.usuario_service.assemblers.UsuarioModelAssembler;
 import com.nativa.usuario_service.dto.UsuarioRequest;
 import com.nativa.usuario_service.dto.UsuarioResponse;
-import com.nativa.usuario_service.model.Usuario;
 import com.nativa.usuario_service.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -16,7 +15,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
