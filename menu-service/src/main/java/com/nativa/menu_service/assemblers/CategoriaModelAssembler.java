@@ -15,7 +15,7 @@ public class CategoriaModelAssembler implements RepresentationModelAssembler<Cat
     @Override
     public EntityModel<CategoriaResponse> toModel(CategoriaResponse categoria) {
         return EntityModel.of(categoria,
-            // Link a sí mismo: GET /menu/productos/{id}
+            // Link a sí mismo: GET /menu/categorias/{id}
             linkTo(methodOn(CategoriaController.class).getCategoriaById(categoria.getId())).withSelfRel(),
             // Link a la colección completa
             linkTo(methodOn(CategoriaController.class).getAllCategorias()).withRel("categorias"),

@@ -34,6 +34,7 @@ public class CategoriaController {
     private final CategoriaService categoriaService;
     private final CategoriaModelAssembler assembler;
 
+    @GetMapping()
     public ResponseEntity<CollectionModel<EntityModel<CategoriaResponse>>> getCategoriasDisponible() {
         List<EntityModel<CategoriaResponse>> categoria = categoriaService.getCategoriasDisponible()
                 .stream()
