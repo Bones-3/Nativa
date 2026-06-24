@@ -13,8 +13,8 @@ public class UsuarioMapper {
         Usuario usuario = new Usuario();
 
         usuario.setCorreoUsuario(request.getCorreoUsuario());
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
+        usuario.setNombres(request.getNombres());
+        usuario.setApellidos(request.getApellidos());
         usuario.setTelefonoUsuario(request.getTelefonoUsuario());
         usuario.setEstadoUsuario(true);
 
@@ -25,8 +25,8 @@ public class UsuarioMapper {
         return UsuarioResponse.builder()
                 .id(usuario.getId())
                 .correoUsuario(usuario.getCorreoUsuario())
-                .nombre(usuario.getNombre())
-                .apellido(usuario.getApellido())
+                .nombre(usuario.getNombres())
+                .apellido(usuario.getApellidos())
                 .telefonoUsuario(usuario.getTelefonoUsuario())
                 .estadoUsuario(usuario.getEstadoUsuario())
                 .build();

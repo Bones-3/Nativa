@@ -24,11 +24,11 @@ public class Usuario {
     @Column(name = "correo_usuario", unique = true)
     private String correoUsuario;
 
-    @Column(name = "nombre")
-    private String nombre;
+    @Column(name = "nombres")
+    private String nombres;
 
-    @Column(name = "apellido")
-    private String apellido;
+    @Column(name = "apellidos")
+    private String apellidos;
 
     @Column(name = "telefono_usuario")
     private String telefonoUsuario;

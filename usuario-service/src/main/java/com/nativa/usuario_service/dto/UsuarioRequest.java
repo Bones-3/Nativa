@@ -11,10 +11,10 @@ public class UsuarioRequest {
     private String correoUsuario;
 
     @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+    private String nombres;
     
     @NotBlank(message = "El apellido es obligatorio")
-    private String apellido;
+    private String apellidos;
 
     @NotBlank(message = "El telefono es obligatorio")
     private String telefonoUsuario;

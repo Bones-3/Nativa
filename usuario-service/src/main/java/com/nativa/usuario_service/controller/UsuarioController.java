@@ -34,6 +34,16 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioModelAssembler assembler;
 
+    @GetMapping()
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> getUsuarioActivo() {
+        List<EntityModel<UsuarioResponse>> usuario = usuarioService.getUsuariosActivo()
+                .stream()
+                .map(assembler::toModel)
+                .toList();
+        
+        return ResponseEntity.ok(CollectionModel.of(usuario,
+                linkTo(methodOn(UsuarioController.class).getUsuarioActivo()).withSelfRel()));
+    }
     @GetMapping("/all")
     public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> getAllUsuario() {
         List<EntityModel<UsuarioResponse>> usuario = usuarioService.getAllUsuarios()

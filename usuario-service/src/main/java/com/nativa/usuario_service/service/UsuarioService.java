@@ -21,6 +21,14 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
 
     @Transactional(readOnly = true)
+    public List<UsuarioResponse> getUsuariosActivo() {
+        return usuarioRepository.findByEstadoUsuarioTrue()
+                .stream()
+                .map(usuarioMapper::toResponse)
+                .toList();
+    }
+    
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> getAllUsuarios() {
         return usuarioRepository.findAll()
                 .stream()
@@ -47,8 +55,8 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         
         usuario.setCorreoUsuario(request.getCorreoUsuario());
-        usuario.setNombre(request.getNombre());  
-        usuario.setApellido(request.getApellido());
+        usuario.setNombres(request.getNombres());  
+        usuario.setApellidos(request.getApellidos());
         usuario.setTelefonoUsuario(request.getTelefonoUsuario());
 
         return usuarioMapper.toResponse(usuarioRepository.save(usuario));
