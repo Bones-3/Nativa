@@ -16,7 +16,7 @@ public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
-                        .title("Menu Service API")
+                        .title("Resena Service API")
                         .version("1.0")
                         .description("API para gestionar el menú de un restaurante"))
         .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
