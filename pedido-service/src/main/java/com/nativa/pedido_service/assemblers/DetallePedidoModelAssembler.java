@@ -18,6 +18,6 @@ public class DetallePedidoModelAssembler implements RepresentationModelAssembler
             // Link a sí mismo: GET /pedido/detallepedidos/{id}
             linkTo(methodOn(DetallePedidoController.class).getDetallePedidoById(detallePedido.getId())).withSelfRel(),
             // Link a la colección completa
-            linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidos()).withRel("detallesPedido"));
+            linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidos()).withRel("todos los detallesPedido"));
     }
 }
