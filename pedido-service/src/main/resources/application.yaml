@@ -10,7 +10,7 @@ spring:
       ddl-auto: none
 
 server:
-  port: 8082
+  port: 8084
 
 eureka:
   client:
@@ -30,3 +30,7 @@ springdoc:
 jwt:
   secret: ${JWT_SECRET:a98ba831524d428bdb59b2a9342de0716eaa901463593fb888e58001f522c74d}
   expiration: ${JWT_EXPIRATION:86400000}
+
+logging:
+  level:
+    com.nativa.pedido-service: DEBUG

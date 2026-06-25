@@ -13,8 +13,8 @@ public class LiquibaseConfig {
     public SpringLiquibase liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
-        liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.xml");
-        liquibase.setShouldRun(false);
+        liquibase.setChangeLog("classpath:db/changelog/pedido.sql");
+        liquibase.setShouldRun(true);
         return liquibase;
     }
 }
