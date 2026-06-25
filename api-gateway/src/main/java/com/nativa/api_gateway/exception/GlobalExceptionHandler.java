@@ -17,44 +17,44 @@ import reactor.core.publisher.Mono;
 @Order(-2)
 @Component
 public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
- 
+
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
         HttpStatus status;
         String message;
- 
+
         // ── Token inválido o expirado lanzado por JwtUtil ─────────────────────
         if (ex instanceof UnauthorizedException) {
             status  = HttpStatus.UNAUTHORIZED;
             message = ex.getMessage();
             log.warn("[401] {} — {}", exchange.getRequest().getPath(), message);
- 
+
         // ── Errores de routing del gateway (404, 503, etc.) ───────────────────
         } else if (ex instanceof ResponseStatusException rse) {
             status  = HttpStatus.valueOf(rse.getStatusCode().value());
             message = rse.getReason() != null ? rse.getReason() : status.getReasonPhrase();
             log.warn("[{}] {} — {}", status.value(), exchange.getRequest().getPath(), message);
- 
+
         // ── Cualquier excepción no controlada ─────────────────────────────────
         } else {
             status  = HttpStatus.INTERNAL_SERVER_ERROR;
             message = "Error interno del servidor";
             log.error("[500] {} — {}", exchange.getRequest().getPath(), ex.getMessage(), ex);
         }
- 
+
         return writeResponse(exchange, status, message);
     }
- 
+
     private Mono<Void> writeResponse(ServerWebExchange exchange, HttpStatus status, String message) {
         var response = exchange.getResponse();
- 
+
         if (response.isCommitted()) {
             return Mono.error(new IllegalStateException("Response ya comprometida"));
         }
- 
+
         response.setStatusCode(status);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
- 
+
         String body = String.format(
                 "{\"status\":%d,\"error\":\"%s\",\"message\":\"%s\",\"path\":\"%s\",\"timestamp\":\"%s\"}",
                 status.value(),
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                 exchange.getRequest().getPath().value(),
                 Instant.now()
         );
- 
+
         var buffer = response.bufferFactory().wrap(body.getBytes());
         return response.writeWith(Mono.just(buffer));
     }
