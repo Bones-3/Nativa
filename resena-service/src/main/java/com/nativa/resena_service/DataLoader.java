@@ -19,7 +19,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (resenaRepository.count() > 0) {
+        if (resenaRepository.count() > 10) {
             System.out.println("DataLoader ya fue ejecutado anteriormente. Omitiendo...");
             return;
         }
@@ -27,7 +27,7 @@ public class DataLoader implements CommandLineRunner {
         Faker faker = new Faker();
         Random random = new Random();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
             Resena resena = new Resena();
             resena.setProductoId((long) (random.nextInt(15) + 1));
             resena.setUsuarioId((long) (random.nextInt(15) + 1));
