@@ -37,7 +37,7 @@ public class PagoService {
     public PagoResponse findById (Long id) {
         return pagoRepository.findById(id)
                     .map(pagoMapper::toResponse)
-                    .get();
+                    .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado con id: " + id));
     }
 
     public PagoResponse createPago(PagoRequest request) {

@@ -62,7 +62,7 @@ public class DataLoader implements CommandLineRunner {
             pagoRepository.save(pago);
         }
 
-        System.out.println("¡Se han cargado 5 pagos de prueba correctamente en usuario_service!");
+        System.out.println("¡Se han cargado 5 pagos de prueba correctamente en pago_service!");
     }
 
 }
