@@ -10,7 +10,7 @@ CREATE TABLE pago (
     fecha_pago  DATETIME NOT NULL
 );
  
-INSERT INTO pago (pedido_id, usuario_id, monto, metodo_pago, fecha_pago) VALUES
+INSERT INTO pago (pedido_id, usuario_id, total, metodo_pago, fecha_pago) VALUES
 (1, 1, 15500.00, 'TARJETA_DEBITO',  '2024-01-10 12:00:00'),
 (2, 2, 23000.00, 'TARJETA_CREDITO', '2024-01-11 13:30:00'),
 (3, 3, 8900.00,  'EFECTIVO',        '2024-01-12 14:00:00'),

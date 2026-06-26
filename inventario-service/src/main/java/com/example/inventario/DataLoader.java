@@ -34,6 +34,7 @@ public class DataLoader implements CommandLineRunner{
         for (int i = 0; i < 5; i++) {
             Inventario inventario = new Inventario();
 
+            inventario.setProductoId(1L);
             inventario.setNombreProducto(faker.commerce().productName());
             inventario.setStockActual(random.nextInt(50) + 10); // Entre 10 y 60
             inventario.setStockMinimo(5); 
