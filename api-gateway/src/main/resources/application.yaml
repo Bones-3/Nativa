@@ -66,7 +66,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 jwt:
-  secret: a98ba831524d428bdb59b2a9342de0716eaa901463593fb888e58001f522c74d
+  secret: ${JWT_SECRET:a98ba831524d428bdb59b2a9342de0716eaa901463593fb888e58001f522c74d}
   expiration: 86400000
 
 logging:
