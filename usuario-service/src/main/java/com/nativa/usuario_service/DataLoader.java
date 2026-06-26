@@ -2,6 +2,7 @@ package com.nativa.usuario_service;
 
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.nativa.usuario_service.model.Usuario;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Random;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
     

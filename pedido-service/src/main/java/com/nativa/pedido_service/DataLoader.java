@@ -1,6 +1,7 @@
 package com.nativa.pedido_service;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.nativa.pedido_service.model.DetallePedido;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
  
