@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nativa.reserva_service.service.MesaServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.871 s -- in com.nativa.reserva_service.service.MesaServiceTest
