@@ -200,6 +200,12 @@ docker compose ps
 # Ver logs en tiempo real
 docker compose logs -f
 
+# Cuenta
+{
+    "correo": "vcortez6565@gmail.com",
+    "password": "87876565Vc."
+}
+
 # ver logs especificos
 docker compose logs pago-service                                                                              
 
