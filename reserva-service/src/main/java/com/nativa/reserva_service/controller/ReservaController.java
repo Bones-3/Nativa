@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nativa.reserva_service.assemblers.MesaModelAssembler;
 import com.nativa.reserva_service.assemblers.ReservaModelAssembler;
-import com.nativa.reserva_service.dto.MesaResponse;
 import com.nativa.reserva_service.dto.ReservaRequest;
 import com.nativa.reserva_service.dto.ReservaResponse;
 import com.nativa.reserva_service.service.ReservaService;

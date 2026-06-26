@@ -11,6 +11,12 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   # 2. Servidor de Descubrimiento (Eureka) - Clave para que los servicios se encuentren
   eureka-service:
@@ -26,10 +32,16 @@ services:
     ports:
       - "8088:8088"
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_auth?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
       - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026 # Solución H1
     depends_on:
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 4. Microservicio de Usuarios
   usuario-service:
@@ -44,8 +56,10 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
       - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 5. Microservicio de Pagos
   pago-service:
@@ -60,8 +74,10 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
       - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 6. Microservicio de Reseñas
   resena-service:
@@ -70,14 +86,16 @@ services:
     ports:
       - "8092:8092"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_resena_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_resena?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
       - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 7. Microservicio de Inventario
   inventario-service:
@@ -91,8 +109,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 8. Microservicio de Menú
   menu-service:
@@ -106,8 +126,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 9. Microservicio de Pedidos
   pedido-service:
@@ -121,8 +143,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 10. Microservicio de Reservas
   reserva-service:
@@ -136,8 +160,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=rootpassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
     depends_on:
-      - mysql-db
-      - eureka-service
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
 
   # 11. API Gateway (Puerta de entrada externa)
   api-gateway:
