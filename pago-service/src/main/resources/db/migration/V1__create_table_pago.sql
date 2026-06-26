@@ -5,7 +5,7 @@ CREATE TABLE pago (
     id_pago     BIGINT AUTO_INCREMENT PRIMARY KEY,
     pedido_id   BIGINT NOT NULL,
     usuario_id  BIGINT,
-    monto       DOUBLE NOT NULL,
+    total       DOUBLE NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL,
     fecha_pago  DATETIME NOT NULL
 );
