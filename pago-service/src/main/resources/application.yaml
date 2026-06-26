@@ -2,7 +2,7 @@ spring:
   application:
     name: pago-service
   datasource:
-    url: jdbc:mysql://localhost:3306/db_usuario_service
+    url: jdbc:mysql://localhost:3306/db_pago_service
     username: root
     password: 
   jpa:
@@ -10,7 +10,7 @@ spring:
       ddl-auto: none
 
 server:
-  port: 8083
+  port: 8086
 
 eureka:
   client:

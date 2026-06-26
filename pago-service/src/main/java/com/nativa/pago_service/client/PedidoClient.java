@@ -9,7 +9,7 @@ import com.nativa.pago_service.client.dto.PedidoResponse;
 @FeignClient(name = "pedido-service")
 public interface PedidoClient {
 
-    @GetMapping("/api/pedidos/{id}")
+    @GetMapping("/pedido/pedidos/{id}")
     PedidoResponse obtenerPorId (@PathVariable Long id);
 
 }

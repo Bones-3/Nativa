@@ -48,7 +48,7 @@ spring:
                 - Path=/api/usuario/**
               filters:
                 - StripPrefix=1
-                - id: resena-service
+            - id: resena-service
               uri: lb://RESENA-SERVICE
               predicates:
                 - Path=/api/resena/**

@@ -15,11 +15,9 @@ public class DetallePedidoModelAssembler implements RepresentationModelAssembler
     @Override
     public EntityModel<DetallePedidoResponse> toModel(DetallePedidoResponse detallePedido) {
         return EntityModel.of(detallePedido,
-            // Link a sí mismo: GET /pedido/detallepedidos"{id}
+            // Link a sí mismo: GET /pedido/detallepedidos/{id}
             linkTo(methodOn(DetallePedidoController.class).getDetallePedidoById(detallePedido.getId())).withSelfRel(),
             // Link a la colección completa
-            linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidos()).withRel("detallesPedido"),
-            // Link a solo la lista de detalles de un pedido
-            linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidoByPedidoId(detallePedido.getPedidoId())).withRel("detalles por pedido"));
+            linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidos()).withRel("todos los detallesPedido"));
     }
 }

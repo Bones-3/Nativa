@@ -8,6 +8,6 @@ import com.nativa.pedido_service.client.dto.UsuarioResponse;
 
 @FeignClient(name = "usuario-service")
 public interface UsuarioClient {
-    @GetMapping("/api/usuarios/{id}")
+    @GetMapping("/usuario/usuarios/{id}")
     UsuarioResponse obtenerPorId (@PathVariable Long id);
 }

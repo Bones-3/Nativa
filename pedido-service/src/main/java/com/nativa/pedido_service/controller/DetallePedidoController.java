@@ -32,6 +32,7 @@ public class DetallePedidoController {
     private final DetallePedidoModelAssembler assembler;
 
     // Si usas HATEOAS — firma y return consistentes
+    @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<DetallePedidoResponse>>> getAllDetallePedidos() {
         List<EntityModel<DetallePedidoResponse>> detalles = detallePedidoService.getAllDetallePedido()
                 .stream()
@@ -47,20 +48,9 @@ public class DetallePedidoController {
         return ResponseEntity.ok(assembler.toModel(detallePedidoService.getDetallePedidoById(id)));
     }
 
-    @GetMapping("/pedido/{id}")
-    public ResponseEntity<CollectionModel<EntityModel<DetallePedidoResponse>>> getAllDetallePedidoByPedidoId(@PathVariable Long id) {
-        List<EntityModel<DetallePedidoResponse>> detalles = detallePedidoService.getDetallePedidoByPedidoId(id)
-                .stream()
-                .map(assembler::toModel)
-                .toList();
-
-        return ResponseEntity.ok(CollectionModel.of(detalles,
-                linkTo(methodOn(DetallePedidoController.class).getAllDetallePedidoByPedidoId(id)).withSelfRel()));
-    }
-
     @PostMapping()
-    public ResponseEntity<DetallePedidoResponse> postCreateDetallePedido(@PathVariable Long id, @RequestBody DetallePedidoRequest request) {
-        return ResponseEntity.ok(detallePedidoService.createDetalleResponse(id, request));
+    public ResponseEntity<DetallePedidoResponse> postCreateDetallePedido(@RequestBody DetallePedidoRequest request) {
+        return ResponseEntity.ok(detallePedidoService.createDetalleResponse(request));
     }
     
     @PutMapping("modificar/{id}")

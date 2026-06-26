@@ -8,6 +8,6 @@ import com.nativa.pedido_service.client.dto.ProductoResponse;
 
 @FeignClient(name = "menu-service")
 public interface ProductoClient {
-    @GetMapping("/api/productos/{id}")
+    @GetMapping("/menu/productos/{id}")
     ProductoResponse obtenerProductoPorId(@PathVariable Long id);
 }
