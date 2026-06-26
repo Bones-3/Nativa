@@ -16,9 +16,9 @@ public class SwaggerConfig {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
-                        .title("Menu Service API")
+                        .title("Pago Service API")
                         .version("1.0")
-                        .description("API para gestionar el menú de un restaurante"))
+                        .description("API para gestionar los pagos de un restaurante"))
             .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
             .components(new Components()
                     .addSecuritySchemes(securitySchemeName,

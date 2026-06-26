@@ -18,7 +18,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Usuario Service API")
                         .version("1.0")
-                        .description("API para gestionar el menú de un restaurante"))
+                        .description("API para gestionar los usuarios de un restaurante"))
             .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
             .components(new Components()
                     .addSecuritySchemes(securitySchemeName,
