@@ -59,8 +59,8 @@ public class SecurityConfig {
                     log.info("[SecurityConfig]   POST /api/auth/register → permitAll");
                     log.info("[SecurityConfig]   anyExchange → authenticated");
                     exchanges
-                            .pathMatchers(HttpMethod.POST, "api/auth/login").permitAll()
-                            .pathMatchers(HttpMethod.POST, "api/auth/register").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                             .anyExchange().authenticated();
                 })
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
