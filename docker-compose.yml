@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+  # 1. Servidor de Base de Datos (Infraestructura)
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2. Servidor de Descubrimiento (Eureka) - Clave para que los servicios se encuentren
+  eureka-service:
+    build: ./eureka-service
+    container_name: eureka-service
+    ports:
+      - "8761:8761"
+
+  # 3. Microservicio de Autenticación
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8088:8088"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+      - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026 # Solución H1
+    depends_on:
+      - eureka-service
+
+  # 4. Microservicio de Usuarios
+  usuario-service:
+    build: ./usuario-service
+    container_name: usuario-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_usuario_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+      - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 5. Microservicio de Pagos
+  pago-service:
+    build: ./pago-service
+    container_name: pago-service
+    ports:
+      - "8086:8086" # Solución H2 (Puerto corregido)
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_pago_service?createDatabaseIfNotExist=true&serverTimezone=UTC # Solución H4
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+      - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 6. Microservicio de Reseñas
+  resena-service:
+    build: ./resena-service
+    container_name: resena-service
+    ports:
+      - "8092:8092"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_resena_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+      - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 7. Microservicio de Inventario
+  inventario-service:
+    build: ./inventario-service
+    container_name: inventario-service
+    ports:
+      - "8091:8091"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_inventario_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 8. Microservicio de Menú
+  menu-service:
+    build: ./menu-service
+    container_name: menu-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_menu_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 9. Microservicio de Pedidos
+  pedido-service:
+    build: ./pedido-service
+    container_name: pedido-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_pedido_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 10. Microservicio de Reservas
+  reserva-service:
+    build: ./reserva-service
+    container_name: reserva-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_reserva_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - mysql-db
+      - eureka-service
+
+  # 11. API Gateway (Puerta de entrada externa)
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080" # El puerto por el que tu Frontend o Postman atacará el sistema
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    depends_on:
+      - eureka-service
+
+volumes:
+  mysql_data:

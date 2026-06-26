@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,6 @@ import com.nativa.resena_service.dto.ResenaRequest;
 import com.nativa.resena_service.dto.ResenaResponse;
 import com.nativa.resena_service.service.ResenaService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -50,8 +50,8 @@ public class ResenaController {
         return ResponseEntity.ok(resenaService.createResena(request));
     }
 
-    @DeleteMapping()
-    public ResponseEntity<Void> resenaPedido(Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> resenaPedido(@PathVariable Long id){
         resenaService.resenaPedido(id);
         return ResponseEntity.noContent().build();
     }
