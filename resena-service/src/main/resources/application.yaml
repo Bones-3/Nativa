@@ -2,7 +2,7 @@ spring:
   application:
     name: resena-service
   datasource:
-    url: jdbc:mysql://localhost:3306/db_resena
+    url: jdbc:mysql://localhost:3306/db_resena_service
     username: root
     password: 
   jpa:

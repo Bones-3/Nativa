@@ -4,6 +4,7 @@ com\nativa\reserva_service\ReservaServiceApplication.class
 com\nativa\reserva_service\security\JwtUtil.class
 com\nativa\reserva_service\dto\MesaRequest.class
 com\nativa\reserva_service\dto\ReservaResponse.class
+com\nativa\reserva_service\assemblers\ReservaModelAssembler.class
 com\nativa\reserva_service\exception\ApiErrorResponse.class
 com\nativa\reserva_service\repository\ReservaRepository.class
 com\nativa\reserva_service\service\ReservaService.class
@@ -25,3 +26,4 @@ com\nativa\reserva_service\exception\ResourceNotFoundException.class
 com\nativa\reserva_service\controller\ReservaController.class
 com\nativa\reserva_service\dto\ReservaResponse$ReservaResponseBuilder.class
 com\nativa\reserva_service\dto\ReservaRequest.class
+com\nativa\reserva_service\assemblers\MesaModelAssembler.class

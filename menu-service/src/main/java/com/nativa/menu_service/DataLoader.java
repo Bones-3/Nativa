@@ -18,25 +18,25 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
- 
+
     private final CategoriaRepository categoriaRepository;
     private final ProductoRepository productoRepository;
- 
+
     @Override
     public void run(String... args) throws Exception {
- 
+
         // Liquibase ya sembró las 8 categorías (changeset:003).
         // Si ya hay productos, este DataLoader ya corrió antes → salir.
         if (productoRepository.count() > 0) {
             System.out.println("DataLoader: productos ya cargados. Omitiendo...");
             return;
         }
- 
+
         // Recuperamos las categorías creadas por Liquibase, indexadas por nombre
         Map<String, Categoria> cat = categoriaRepository.findAll()
                 .stream()
                 .collect(Collectors.toMap(Categoria::getNombre, c -> c));
- 
+
         productoRepository.saveAll(List.of(
             build("Empanadas de Pino",    "Dos empanadas horneadas con pino de carne, cebolla, huevo y aceituna", 4500,  cat.get("Entradas")),
             build("Ceviche de Reineta",   "Reineta fresca marinada en limón con cebolla, cilantro y ají verde",    6500,  cat.get("Entradas")),
@@ -54,10 +54,10 @@ public class DataLoader implements CommandLineRunner {
             build("Sánguche de Pernil",   "Pernil de cerdo en marraqueta con pebre y mayonesa",                       6500,  cat.get("Sánguches")),
             build("Porción de Palta",     "Agregado de palta molida para tus platos o sánguches",                    1500,  cat.get("Agregados"))
         ));
- 
+
         System.out.println("DataLoader: " + productoRepository.count() + " productos cargados correctamente en menu-service.");
     }
- 
+
     private Producto build(String nombre, String descripcion, int precio, Categoria categoria) {
         Producto p = new Producto();
         p.setNombre(nombre);

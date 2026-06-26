@@ -11,7 +11,6 @@ import com.nativa.reserva_service.dto.MesaResponse;
 
 @Component
 public class MesaModelAssembler implements RepresentationModelAssembler<MesaResponse, EntityModel<MesaResponse>> {
-     
     
     @Override
     public EntityModel<MesaResponse> toModel(MesaResponse mesa) {
