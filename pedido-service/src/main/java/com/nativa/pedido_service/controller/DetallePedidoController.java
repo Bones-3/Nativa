@@ -61,7 +61,7 @@ public class DetallePedidoController {
     @DeleteMapping("eliminar/{id}")
     public ResponseEntity<Void> deleteDetallePedido(@PathVariable Long id) {
         detallePedidoService.deleteDetallePedido(id);
-        return ResponseEntity.ok().build(); 
+        return ResponseEntity.noContent().build();
     }
 
 }
