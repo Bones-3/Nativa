@@ -227,7 +227,7 @@ class UsuarioServiceTest {
 
         assertThatThrownBy(() -> usuarioService.updateUsuario(99L, usuarioRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Categoría no encontrada");
+                .hasMessage("Usuario no encontrado");
 
         verify(usuarioRepository).findById(99L);
         verify(usuarioRepository, never()).save(any());
@@ -251,7 +251,7 @@ class UsuarioServiceTest {
 
         assertThatThrownBy(() -> usuarioService.deleteUsuario(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Categoría no encontrada");
+                .hasMessage("Usuario no encontrado");
 
         verify(usuarioRepository).findById(99L);
         verify(usuarioRepository, never()).save(any());
