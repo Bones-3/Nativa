@@ -185,4 +185,35 @@ class PagoServiceTest {
         verify(pedidoClient).obtenerPorId(1L);
         verifyNoInteractions(pagoMapper, pagoRepository);
     }
+
+    @Test
+    void createPago_shouldSetTotalFromPedido() {
+        // Given
+        UsuarioResponse usuario = new UsuarioResponse();
+        usuario.setId(1L);
+        when(usuarioClient.obtenerPorId(1L)).thenReturn(usuario);
+
+        PedidoResponse pedido = new PedidoResponse();
+        pedido.setId(1L);
+        pedido.setTotalPagar(new BigDecimal("25000.00"));
+        when(pedidoClient.obtenerPorId(1L)).thenReturn(pedido);
+
+        Pago pagoEntity = new Pago();
+        when(pagoMapper.toEntity(pagoRequest)).thenReturn(pagoEntity);
+
+        Pago savedPago = new Pago(1L, 1L, 1L, 25000.0, "TARJETA", LocalDateTime.now());
+        when(pagoRepository.save(pagoEntity)).thenReturn(savedPago);
+
+        PagoResponse expectedResponse = PagoResponse.builder()
+                .id(1L).pedido_id(1L).usuario_id(1L).total(25000.0)
+                .metodoPago("TARJETA").fechaPago(savedPago.getFechaPago())
+                .build();
+        when(pagoMapper.toResponse(savedPago)).thenReturn(expectedResponse);
+
+        // When
+        PagoResponse result = pagoService.createPago(pagoRequest);
+
+        // Then
+        assertThat(result.getTotal()).isEqualTo(25000.0);
+    }
 }

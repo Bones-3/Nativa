@@ -211,4 +211,31 @@ class PedidoServiceTest {
         verify(pedidoRepository).findById(99L);
         verifyNoInteractions(detallePedidoRepository);
     }
+
+    @Test
+    void recalcularTotales_shouldCalculateIvaAs19Percent() {
+        // Given
+        Pedido pedido = new Pedido();
+        pedido.setId(1L);
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+
+        DetallePedido detalle1 = new DetallePedido();
+        detalle1.setSubtotal(new BigDecimal("10000"));
+        DetallePedido detalle2 = new DetallePedido();
+        detalle2.setSubtotal(new BigDecimal("5000"));
+        when(detallePedidoRepository.findByPedidoId(1L))
+                .thenReturn(List.of(detalle1, detalle2));
+
+        // When
+        pedidoService.recalcularTotales(1L);
+
+        // Then
+        BigDecimal subtotalEsperado = new BigDecimal("15000");
+        BigDecimal ivaEsperado = subtotalEsperado.multiply(new BigDecimal("0.19"));
+        BigDecimal totalEsperado = subtotalEsperado.add(ivaEsperado);
+
+        assertThat(pedido.getSubtotal()).isEqualByComparingTo(subtotalEsperado);
+        assertThat(pedido.getIva()).isEqualByComparingTo(ivaEsperado);
+        assertThat(pedido.getTotalPagar()).isEqualByComparingTo(totalEsperado);
+    }
 }

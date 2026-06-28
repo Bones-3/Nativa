@@ -256,4 +256,36 @@ class UsuarioServiceTest {
         verify(usuarioRepository).findById(99L);
         verify(usuarioRepository, never()).save(any());
     }
+
+    @Test
+    void createUsuario_shouldSaveUsuarioWithCorreoValido() {
+        // Given
+        UsuarioRequest request = new UsuarioRequest();
+        request.setCorreoUsuario("cliente@nativa.com");
+        request.setNombres("Juan");
+        request.setApellidos("Pérez");
+
+        Usuario usuarioEntity = new Usuario();
+        usuarioEntity.setCorreoUsuario("cliente@nativa.com");
+        when(usuarioMapper.toEntity(request)).thenReturn(usuarioEntity);
+
+        Usuario usuarioGuardado = new Usuario();
+        usuarioGuardado.setId(1L);
+        usuarioGuardado.setCorreoUsuario("cliente@nativa.com");
+        when(usuarioRepository.save(usuarioEntity)).thenReturn(usuarioGuardado);
+
+        UsuarioResponse response = UsuarioResponse.builder()
+                .id(1L)
+                .correoUsuario("cliente@nativa.com")
+                .build();
+        when(usuarioMapper.toResponse(usuarioGuardado)).thenReturn(response);
+
+        // When
+        UsuarioResponse result = usuarioService.createUsuario(request);
+
+        // Then
+        assertThat(result.getCorreoUsuario()).isEqualTo("cliente@nativa.com");
+        assertThat(result.getCorreoUsuario()).contains("@");
+        verify(usuarioRepository).save(usuarioEntity);
+    }
 }
