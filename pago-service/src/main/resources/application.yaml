@@ -2,9 +2,9 @@ spring:
   application:
     name: pago-service
   datasource:
-    url: jdbc:mysql://localhost:3306/db_pago_service
-    username: root
-    password: 
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/db_pago_service?createDatabaseIfNotExist=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:rootpassword}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -12,6 +12,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    repair-on-migrate: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -24,7 +25,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
 
 springdoc:
   api-docs:
