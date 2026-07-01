@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -34,13 +34,13 @@ class InventarioControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private InventarioService inventarioService;
 
-    @MockBean
+    @MockitoBean
     private InventarioModelAssembler assembler;
 
-    @MockBean(name = "inventarioJwtFilter")
+    @MockitoBean(name = "inventarioJwtFilter")
     private JwtFilter jwtFilter;
 
     private InventarioResponse buildResponse() {
