@@ -4,6 +4,7 @@ import com.nativa.resena_service.assemblers.ResenaModelAssembler;
 import com.nativa.resena_service.dto.ResenaRequest;
 import com.nativa.resena_service.dto.ResenaResponse;
 import com.nativa.resena_service.exception.ResourceNotFoundException;
+import com.nativa.resena_service.security.JwtUtil;
 import com.nativa.resena_service.service.ResenaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ class ResenaControllerTest {
 
         @MockitoBean
         private ResenaService resenaService;
+
+        @MockitoBean
+        private JwtUtil jwtUtil;
 
         @Test
         void getAllResenas_shouldReturnList() throws Exception {
@@ -104,7 +108,7 @@ class ResenaControllerTest {
 
         @Test
         void resenaPedido_shouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/resena/resenas"))
+        mockMvc.perform(delete("/resena/resenas/1"))
                 .andExpect(status().isNoContent());
 
         verify(resenaService).resenaPedido(any());

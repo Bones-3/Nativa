@@ -130,7 +130,7 @@ class PedidoControllerTest {
                 doNothing().when(pedidoService).deletePedido(1L);
 
                 mockMvc.perform(delete("/pedido/pedidos/eliminar/1"))
-                        .andExpect(status().isOk());
+                        .andExpect(status().isNoContent());
 
                 verify(pedidoService).deletePedido(1L);
         }

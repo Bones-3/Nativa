@@ -165,7 +165,7 @@ class DetallePedidoControllerTest {
         doNothing().when(detallePedidoService).deleteDetallePedido(1L);
 
         mockMvc.perform(delete("/pedido/detallepedidos/eliminar/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(detallePedidoService).deleteDetallePedido(1L);
         }
