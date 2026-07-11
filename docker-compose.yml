@@ -169,12 +169,12 @@ services:
       eureka-service:
         condition: service_started
 
-  # 101. Microservicio de Promociones
+  # 11. Microservicio de Promociones
   promocion-service:
     build: ./promocion-service
     container_name: promocion-service
     ports:
-      - "8086:8086"
+      - "8096:8096"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_promocion_service?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=root
@@ -187,7 +187,25 @@ services:
       eureka-service:
         condition: service_started
 
-  # 12. API Gateway (Puerta de entrada externa)
+  # 12. Microservicio de Horarios
+  horario-service:
+    build: ./horario-service
+    container_name: horario-service
+    ports:
+      - "8095:8095"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_horario_service?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+      - JWT_SECRET=MiClaveSuperSecretaDeProduccion2026
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
+
+  # 13. API Gateway (Puerta de entrada externa)
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway
