@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @Component
-@RequestMapping("/horario/horarios")
+@RequestMapping("/horarioV2/horarios")
 @RequiredArgsConstructor
 public class HorarioControllerV2 {
     private final HorarioService horarioService;
