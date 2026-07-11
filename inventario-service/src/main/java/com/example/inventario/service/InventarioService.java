@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.inventario.dto.InventarioRequest;
 import com.example.inventario.dto.InventarioResponse;
 import com.example.inventario.exception.NotFoundException;
+import com.example.inventario.mapper.InventarioMapper;
 import com.example.inventario.model.Inventario;
 import com.example.inventario.repository.InventarioRepository;
 
@@ -22,22 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
+    private final InventarioMapper inventarioMapper;
 
     @Transactional
     public InventarioResponse crearInventario(InventarioRequest request) {
         log.info("Iniciando creación de inventario para producto: {}", request.getProductoId());
 
-        Inventario inventario = new Inventario();
-        inventario.setProductoId(request.getProductoId());
-        inventario.setNombreProducto(request.getNombreProducto());
-        inventario.setStockActual(request.getStockActual());
-        inventario.setStockMinimo(request.getStockMinimo());
-        inventario.setUnidadMedida(request.getUnidadMedida());
-        inventario.setUltimaActualizacion(LocalDateTime.now());
+        Inventario inventario = inventarioMapper.toEntity(request);
 
         Inventario guardado = inventarioRepository.save(inventario);
         log.info("Inventario creado para producto: {}", request.getProductoId());
-        return mapToResponse(guardado);
+        return inventarioMapper.toResponse(guardado);
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +44,7 @@ public class InventarioService {
                 log.warn("No se encontró el inventario con ID: {}", id);
                 return new NotFoundException("Inventario no encontrado con id: " + id);
             });
-        return mapToResponse(inventario);
+        return inventarioMapper.toResponse(inventario);
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +55,7 @@ public class InventarioService {
                 log.warn("No se encontró inventario para el producto: {}", productoId);
                 return new NotFoundException("Inventario no encontrado para producto: " + productoId);
             });
-        return mapToResponse(inventario);
+        return inventarioMapper.toResponse(inventario);
     }
 
     @Transactional(readOnly = true)
@@ -67,7 +63,7 @@ public class InventarioService {
         log.info("Solicitando la lista de todos los inventarios");
         return inventarioRepository.findAll()
             .stream()
-            .map(this::mapToResponse)
+            .map(inventarioMapper::toResponse)
             .collect(Collectors.toList());
     }
 
@@ -90,7 +86,7 @@ public class InventarioService {
 
         Inventario actualizado = inventarioRepository.save(inventario);
         log.info("Inventario actualizado con id: {}", id);
-        return mapToResponse(actualizado);
+        return inventarioMapper.toResponse(actualizado);
     }
 
     @Transactional
@@ -109,18 +105,7 @@ public class InventarioService {
         log.info("Solicitando la lista de inventarios con stock bajo");
         return inventarioRepository.findStockBajo()
             .stream()
-            .map(this::mapToResponse)
+            .map(inventarioMapper::toResponse)
             .collect(Collectors.toList());
-    }
-
-    private InventarioResponse mapToResponse(Inventario inventario) {
-        return new InventarioResponse(
-            inventario.getId(),
-            inventario.getProductoId(),
-            inventario.getNombreProducto(),
-            inventario.getStockActual(),
-            inventario.getStockMinimo(),
-            inventario.getUnidadMedida()
-        );
     }
 }

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.inventario.dto.InventarioRequest;
 import com.example.inventario.dto.InventarioResponse;
 import com.example.inventario.exception.NotFoundException;
+import com.example.inventario.mapper.InventarioMapper;
 import com.example.inventario.model.Inventario;
 import com.example.inventario.repository.InventarioRepository;
 
@@ -26,6 +27,9 @@ class InventarioServiceTest {
 
     @Mock
     private InventarioRepository inventarioRepository;
+
+    @Mock
+    private InventarioMapper inventarioMapper;
 
     @InjectMocks
     private InventarioService inventarioService;
@@ -42,11 +46,23 @@ class InventarioServiceTest {
         return inv;
     }
 
+    private InventarioResponse buildResponse(Inventario inv) {
+        return new InventarioResponse(
+                inv.getId(),
+                inv.getProductoId(),
+                inv.getNombreProducto(),
+                inv.getStockActual(),
+                inv.getStockMinimo(),
+                inv.getUnidadMedida()
+        );
+    }
+
     @Test
     void obtenerTodos_shouldReturnList() {
         // Given
         Inventario inv = buildInventario();
         when(inventarioRepository.findAll()).thenReturn(List.of(inv));
+        when(inventarioMapper.toResponse(inv)).thenReturn(buildResponse(inv));
 
         // When
         List<InventarioResponse> result = inventarioService.obtenerTodos();
@@ -69,6 +85,7 @@ class InventarioServiceTest {
         // Then
         assertThat(result).isEmpty();
         verify(inventarioRepository).findAll();
+        verifyNoInteractions(inventarioMapper);
     }
 
     @Test
@@ -76,6 +93,7 @@ class InventarioServiceTest {
         // Given
         Inventario inv = buildInventario();
         when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inv));
+        when(inventarioMapper.toResponse(inv)).thenReturn(buildResponse(inv));
 
         // When
         InventarioResponse result = inventarioService.obtenerPorId(1L);
@@ -97,14 +115,18 @@ class InventarioServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("99");
         verify(inventarioRepository).findById(99L);
+        verifyNoInteractions(inventarioMapper);
     }
 
     @Test
     void crearInventario_shouldReturnSavedInventario() {
         // Given
         InventarioRequest request = new InventarioRequest(10L, "Arroz", 50, 10, "kg");
+        Inventario nuevo = buildInventario();
         Inventario guardado = buildInventario();
-        when(inventarioRepository.save(any(Inventario.class))).thenReturn(guardado);
+        when(inventarioMapper.toEntity(request)).thenReturn(nuevo);
+        when(inventarioRepository.save(nuevo)).thenReturn(guardado);
+        when(inventarioMapper.toResponse(guardado)).thenReturn(buildResponse(guardado));
 
         // When
         InventarioResponse result = inventarioService.crearInventario(request);
@@ -113,7 +135,7 @@ class InventarioServiceTest {
         assertThat(result.getProductoId()).isEqualTo(10L);
         assertThat(result.getNombreProducto()).isEqualTo("Arroz");
         assertThat(result.getStockActual()).isEqualTo(50);
-        verify(inventarioRepository).save(any(Inventario.class));
+        verify(inventarioRepository).save(nuevo);
     }
 
     @Test
@@ -148,6 +170,7 @@ class InventarioServiceTest {
         Inventario inv = buildInventario();
         inv.setStockActual(5);
         when(inventarioRepository.findStockBajo()).thenReturn(List.of(inv));
+        when(inventarioMapper.toResponse(inv)).thenReturn(buildResponse(inv));
 
         // When
         List<InventarioResponse> result = inventarioService.obtenerStockBajo();
