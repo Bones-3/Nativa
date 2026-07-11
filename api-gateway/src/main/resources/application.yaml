@@ -60,6 +60,12 @@ spring:
                 - Path=/api/promocion/**
               filters:
                 - StripPrefix=1
+            - id: horario-service
+              uri: lb://HORARIO-SERVICE
+              predicates:
+                - Path=/api/horario/**
+              filters:
+                - StripPrefix=1
 
 server:
   port: 8080
