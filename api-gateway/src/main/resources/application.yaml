@@ -54,6 +54,12 @@ spring:
                 - Path=/api/resena/**
               filters:
                 - StripPrefix=1
+            - id: promocion-service
+              uri: lb://PROMOCION-SERVICE
+              predicates:
+                - Path=/api/promocion/**
+              filters:
+                - StripPrefix=1
 
 server:
   port: 8080
