@@ -18,33 +18,53 @@ import com.nativa.horario_service.service.HorarioService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Component
 @RequestMapping("/horario/horarios")
 @RequiredArgsConstructor
+@Slf4j
 public class HorarioController {
     private final HorarioService horarioService;
 
     @GetMapping()
     public ResponseEntity<List<HorarioResponse>> getAllHorarios() {
+        log.info("Petición HTTP GET recibida en /horario/horarios - Listando horarios");
 
-        return ResponseEntity.ok(horarioService.getAllHorarios());
+        List<HorarioResponse> horarios = horarioService.getAllHorarios();
+
+        log.info("Se retornaron {} horarios exitosamente", horarios.size());
+        return ResponseEntity.ok(horarios);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<HorarioResponse> getHorarioById(@Valid @PathVariable Long id) {
-        return ResponseEntity.ok(horarioService.getHorarioById(id));
+        log.info("Petición HTTP GET recibida en /horario/horarios/{} - Buscando horario", id);
+
+        HorarioResponse horario = horarioService.getHorarioById(id);
+
+        log.info("Horario con ID {} encontrado correctamente", id);
+        return ResponseEntity.ok(horario);
     }
 
     @PostMapping()
     public ResponseEntity<HorarioResponse> createHorario(@Valid @RequestBody HorarioRequest request){
-        return ResponseEntity.ok(horarioService.createHorario(request));
+        log.info("Petición HTTP POST recibida en /horario/horarios - Creando horario para día: {}", request.getDiaSemana());
+
+        HorarioResponse creado = horarioService.createHorario(request);
+
+        log.info("Horario creado exitosamente con ID {}", creado.getId());
+        return ResponseEntity.ok(creado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHorario(@Valid @PathVariable Long id){
+        log.info("Petición HTTP DELETE recibida en /horario/horarios/{} - Eliminando horario", id);
+
         horarioService.deleteHorario(id);
+
+        log.info("Horario con ID {} eliminado correctamente. Retornando status 204 (No Content)", id);
         return ResponseEntity.noContent().build();
     }
 

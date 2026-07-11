@@ -19,9 +19,11 @@ import com.nativa.pedido_service.repository.DetallePedidoRepository;
 import com.nativa.pedido_service.repository.PedidoRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PedidoService {
     private final PedidoMapper pedidoMapper;
     private final PedidoRepository pedidoRepository;
@@ -30,6 +32,7 @@ public class PedidoService {
 
     @Transactional(readOnly = true)
     public List<PedidoResponse> getAllPedido() {
+        log.info("Solicitando la lista de todos los pedidos");
         return pedidoRepository.findAll()
                 .stream()
                 .map(pedidoMapper::toResponse)
@@ -38,18 +41,24 @@ public class PedidoService {
 
     @Transactional(readOnly = true)
     public PedidoResponse getPedidoById(Long id) {
+        log.info("Buscando pedido con ID: {}", id);
         return pedidoRepository.findById(id)
                 .map(pedidoMapper::toResponse)
-                .orElseThrow(()-> new ResourceNotFoundException("Pedido no encontrado"));
+                .orElseThrow(()-> {
+                    log.warn("No se encontró el pedido con ID: {}", id);
+                    return new ResourceNotFoundException("Pedido no encontrado");
+                });
     }
 
     @Transactional
     public PedidoResponse createPedidoResponse(PedidoRequest request) {
+    log.info("Iniciando creación de pedido para usuario {}", request.getUsuarioId());
 
     UsuarioResponse usuario =
             usuarioClient.obtenerPorId(request.getUsuarioId());
 
     if (usuario == null) {
+        log.error("Error al crear pedido: usuario {} no encontrado", request.getUsuarioId());
         throw new ResourceNotFoundException("Usuario no encontrado");
     }
 
@@ -63,21 +72,28 @@ public class PedidoService {
     pedido.setIva(BigDecimal.ZERO);
     pedido.setTotalPagar(BigDecimal.ZERO);
 
-    return pedidoMapper.toResponse(
-            pedidoRepository.save(pedido)
-    );
+    Pedido pedidoGuardado = pedidoRepository.save(pedido);
+
+    log.info("Pedido creado exitosamente con ID {}", pedidoGuardado.getId());
+    return pedidoMapper.toResponse(pedidoGuardado);
     }
 
     @Transactional
     public void deletePedido(Long id) {
+        log.info("Eliminando pedido con ID: {}", id);
         pedidoRepository.deleteById(id);
+        log.info("Pedido con ID {} eliminado correctamente", id);
     }
 
     @Transactional
     public void recalcularTotales(Long pedidoId) {
+        log.info("Recalculando totales del pedido {}", pedidoId);
 
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado"));
+                .orElseThrow(() -> {
+                    log.warn("No se pudo recalcular: pedido {} no encontrado", pedidoId);
+                    return new ResourceNotFoundException("Pedido no encontrado");
+                });
 
         BigDecimal subtotal = detallePedidoRepository
                 .findByPedidoId(pedidoId)
@@ -94,5 +110,7 @@ public class PedidoService {
         pedido.setTotalPagar(totalPagar);
 
         pedidoRepository.save(pedido);
+
+        log.info("Totales recalculados para pedido {}: subtotal={}, iva={}, total={}", pedidoId, subtotal, iva, totalPagar);
     }
 }

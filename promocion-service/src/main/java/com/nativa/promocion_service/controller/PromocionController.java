@@ -17,31 +17,52 @@ import com.nativa.promocion_service.service.PromocionService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/promocion/promociones")
 @RequiredArgsConstructor
+@Slf4j
 public class PromocionController {
     private final PromocionService promocionService;
 
     @GetMapping()
     public ResponseEntity<List<PromocionResponse>> getAllPromociones(){
-        return ResponseEntity.ok(promocionService.getAllPromociones());
-    } 
+        log.info("Petición HTTP GET recibida en /promocion/promociones - Listando promociones");
+
+        List<PromocionResponse> promociones = promocionService.getAllPromociones();
+
+        log.info("Se retornaron {} promociones exitosamente", promociones.size());
+        return ResponseEntity.ok(promociones);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<PromocionResponse> getPromocionById(@Valid@PathVariable Long id) {
-        return ResponseEntity.ok(promocionService.getPromocionById(id));
+        log.info("Petición HTTP GET recibida en /promocion/promociones/{} - Buscando promoción", id);
+
+        PromocionResponse promocion = promocionService.getPromocionById(id);
+
+        log.info("Promoción con ID {} encontrada correctamente", id);
+        return ResponseEntity.ok(promocion);
     }
 
     @PostMapping()
     public ResponseEntity<PromocionResponse> createPromocion(@Valid@RequestBody PromocionRequest request){
-        return ResponseEntity.ok(promocionService.createPromocion(request));
+        log.info("Petición HTTP POST recibida en /promocion/promociones - Creando promoción con código: {}", request.getCodigo());
+
+        PromocionResponse creada = promocionService.createPromocion(request);
+
+        log.info("Promoción creada exitosamente con ID {}", creada.getId());
+        return ResponseEntity.ok(creada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePromocion(@Valid@PathVariable Long id){
+        log.info("Petición HTTP DELETE recibida en /promocion/promociones/{} - Eliminando promoción", id);
+
         promocionService.deletePromocion(id);
+
+        log.info("Promoción con ID {} eliminada correctamente. Retornando status 204 (No Content)", id);
         return ResponseEntity.noContent().build();
     }
 

@@ -18,6 +18,7 @@ import com.nativa.horario_service.dto.HorarioResponse;
 import com.nativa.horario_service.service.HorarioService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 
@@ -25,24 +26,33 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequestMapping("/horarioV2/horarios")
 @RequiredArgsConstructor
+@Slf4j
 public class HorarioControllerV2 {
     private final HorarioService horarioService;
     private final HorarioModelAssembler assembler;
 
     @GetMapping()
     public ResponseEntity<CollectionModel<EntityModel<HorarioResponse>>> getAllHorarios() {
+        log.info("Petición HTTP GET recibida en /horarioV2/horarios - Listando horarios");
+
         List<EntityModel<HorarioResponse>> horarios = horarioService.getAllHorarios()
                 .stream()
                 .map(assembler::toModel)
                 .toList();
 
+        log.info("Se retornaron {} horarios exitosamente", horarios.size());
         return ResponseEntity.ok(CollectionModel.of(horarios,
                 linkTo(methodOn(HorarioControllerV2.class).getAllHorarios()).withSelfRel()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<HorarioResponse>> getHorarioById(@PathVariable Long id) {
-        return ResponseEntity.ok(assembler.toModel(horarioService.getHorarioById(id)));
+        log.info("Petición HTTP GET recibida en /horarioV2/horarios/{} - Buscando horario", id);
+
+        EntityModel<HorarioResponse> horario = assembler.toModel(horarioService.getHorarioById(id));
+
+        log.info("Horario con ID {} encontrado correctamente", id);
+        return ResponseEntity.ok(horario);
     }
 
 }

@@ -16,9 +16,11 @@ import com.nativa.reserva_service.repository.MesaRepository;
 import com.nativa.reserva_service.repository.ReservaRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservaService {
 
     private final ReservaRepository reservaRepository;
@@ -27,6 +29,7 @@ public class ReservaService {
 
     @Transactional(readOnly = true)
     public List<ReservaResponse> getAllReservas() {
+        log.info("Solicitando la lista de todas las reservas");
         return reservaRepository.findByOrderByFechaCreacionDesc()
                 .stream()
                 .map(reservaMapper::toResponse)
@@ -35,21 +38,33 @@ public class ReservaService {
 
     @Transactional(readOnly = true)
     public ReservaResponse getReservaById(Long id) {
+        log.info("Buscando reserva con ID: {}", id);
         return reservaRepository.findById(id)
                 .map(reservaMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("No se encontró la reserva con ID: {}", id);
+                    return new ResourceNotFoundException("Reserva no encontrada con id: " + id);
+                });
     }
 
     @Transactional
     public ReservaResponse createReserva(ReservaRequest request) {
+        log.info("Iniciando creación de reserva para mesa {}", request.getMesaId());
+
         var mesa = mesaRepository.findById(request.getMesaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Mesa no encontrada con id: " + request.getMesaId()));
+                .orElseThrow(() -> {
+                    log.error("Error al crear reserva: mesa {} no existe", request.getMesaId());
+                    return new ResourceNotFoundException("Mesa no encontrada con id: " + request.getMesaId());
+                });
 
         if (!Boolean.TRUE.equals(mesa.getDisponible())) {
+            log.warn("Reserva rechazada: mesa {} no disponible", request.getMesaId());
             throw new BadRequestException("La mesa no está disponible para reservas");
         }
 
         if (request.getCantidadPersonas() > mesa.getCapacidad()) {
+            log.warn("Reserva rechazada: cantidad de personas ({}) excede la capacidad de la mesa {} ({})",
+                    request.getCantidadPersonas(), request.getMesaId(), mesa.getCapacidad());
             throw new BadRequestException(
                     "La cantidad de personas (" + request.getCantidadPersonas()
                             + ") excede la capacidad de la mesa (" + mesa.getCapacidad() + ")");
@@ -65,6 +80,7 @@ public class ReservaService {
                 .toList();
 
         if (!conflictos.isEmpty()) {
+            log.warn("Reserva rechazada: mesa {} ya tiene una reserva cercana a las {}", request.getMesaId(), request.getHora());
             throw new BadRequestException(
                     "La mesa ya tiene una reserva en un rango cercano a las " + request.getHora());
         }
@@ -74,16 +90,26 @@ public class ReservaService {
         reserva.setFechaCreacion(LocalDateTime.now());
         reserva.setMesa(mesa);
 
-        return reservaMapper.toResponse(reservaRepository.save(reserva));
+        var reservaGuardada = reservaRepository.save(reserva);
+        log.info("Reserva creada exitosamente con ID {}", reservaGuardada.getId());
+        return reservaMapper.toResponse(reservaGuardada);
     }
 
     @Transactional
     public ReservaResponse updateReserva(Long id, ReservaRequest request) {
+        log.info("Iniciando actualización de la reserva con ID: {}", id);
+
         var reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con id: " + id));
+                .orElseThrow(() -> {
+                    log.error("Error al actualizar: Reserva con ID {} no existe", id);
+                    return new ResourceNotFoundException("Reserva no encontrada con id: " + id);
+                });
 
         var mesa = mesaRepository.findById(request.getMesaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Mesa no encontrada con id: " + request.getMesaId()));
+                .orElseThrow(() -> {
+                    log.error("Error al actualizar reserva {}: mesa {} no existe", id, request.getMesaId());
+                    return new ResourceNotFoundException("Mesa no encontrada con id: " + request.getMesaId());
+                });
 
         reserva.setNombreCliente(request.getNombreCliente());
         reserva.setTelefono(request.getTelefono());
@@ -93,15 +119,24 @@ public class ReservaService {
         reserva.setCantidadPersonas(request.getCantidadPersonas());
         reserva.setMesa(mesa);
 
-        return reservaMapper.toResponse(reservaRepository.save(reserva));
+        var reservaActualizada = reservaRepository.save(reserva);
+        log.info("Reserva con ID: {} actualizada correctamente", id);
+        return reservaMapper.toResponse(reservaActualizada);
     }
 
     @Transactional
     public void cancelReserva(Long id) {
+        log.info("Iniciando cancelación de la reserva con ID: {}", id);
+
         var reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con id: " + id));
+                .orElseThrow(() -> {
+                    log.error("Error al cancelar: Reserva con ID {} no existe", id);
+                    return new ResourceNotFoundException("Reserva no encontrada con id: " + id);
+                });
 
         reserva.setEstado("CANCELADA");
         reservaRepository.save(reserva);
+
+        log.info("Reserva con ID: {} cancelada correctamente", id);
     }
 }

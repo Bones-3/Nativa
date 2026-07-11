@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,16 +14,19 @@ import com.example.inventario.model.Inventario;
 import com.example.inventario.repository.InventarioRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
-    private static final Logger log = LoggerFactory.getLogger(InventarioService.class);
 
     @Transactional
     public InventarioResponse crearInventario(InventarioRequest request) {
+        log.info("Iniciando creación de inventario para producto: {}", request.getProductoId());
+
         Inventario inventario = new Inventario();
         inventario.setProductoId(request.getProductoId());
         inventario.setNombreProducto(request.getNombreProducto());
@@ -41,20 +42,29 @@ public class InventarioService {
 
     @Transactional(readOnly = true)
     public InventarioResponse obtenerPorId(Long id) {
+        log.info("Buscando inventario con ID: {}", id);
         Inventario inventario = inventarioRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Inventario no encontrado con id: " + id));
+            .orElseThrow(() -> {
+                log.warn("No se encontró el inventario con ID: {}", id);
+                return new NotFoundException("Inventario no encontrado con id: " + id);
+            });
         return mapToResponse(inventario);
     }
 
     @Transactional(readOnly = true)
     public InventarioResponse obtenerPorProductoId(Long productoId) {
+        log.info("Buscando inventario del producto: {}", productoId);
         Inventario inventario = inventarioRepository.findByProductoId(productoId)
-            .orElseThrow(() -> new NotFoundException("Inventario no encontrado para producto: " + productoId));
+            .orElseThrow(() -> {
+                log.warn("No se encontró inventario para el producto: {}", productoId);
+                return new NotFoundException("Inventario no encontrado para producto: " + productoId);
+            });
         return mapToResponse(inventario);
     }
 
     @Transactional(readOnly = true)
     public List<InventarioResponse> obtenerTodos() {
+        log.info("Solicitando la lista de todos los inventarios");
         return inventarioRepository.findAll()
             .stream()
             .map(this::mapToResponse)
@@ -63,8 +73,13 @@ public class InventarioService {
 
     @Transactional
     public InventarioResponse actualizar(Long id, InventarioRequest request) {
+        log.info("Iniciando actualización del inventario con ID: {}", id);
+
         Inventario inventario = inventarioRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Inventario no encontrado con id: " + id));
+            .orElseThrow(() -> {
+                log.error("Error al actualizar: Inventario con ID {} no existe", id);
+                return new NotFoundException("Inventario no encontrado con id: " + id);
+            });
 
         inventario.setProductoId(request.getProductoId());
         inventario.setNombreProducto(request.getNombreProducto());
@@ -80,7 +95,9 @@ public class InventarioService {
 
     @Transactional
     public void eliminar(Long id) {
+        log.info("Iniciando eliminación del inventario con ID: {}", id);
         if (!inventarioRepository.existsById(id)) {
+            log.error("Error al eliminar: Inventario con ID {} no existe", id);
             throw new NotFoundException("Inventario no encontrado con id: " + id);
         }
         inventarioRepository.deleteById(id);
@@ -89,6 +106,7 @@ public class InventarioService {
 
     @Transactional(readOnly = true)
     public List<InventarioResponse> obtenerStockBajo() {
+        log.info("Solicitando la lista de inventarios con stock bajo");
         return inventarioRepository.findStockBajo()
             .stream()
             .map(this::mapToResponse)

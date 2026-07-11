@@ -17,17 +17,20 @@ import com.nativa.pago_service.model.Pago;
 import com.nativa.pago_service.repository.PagoRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PagoService {
-    
+
     private final PagoRepository pagoRepository;
     private final PagoMapper pagoMapper;
     private final UsuarioClient usuarioClient;
     private final PedidoClient pedidoClient;
 
     public List<PagoResponse> getAllPagos() {
+        log.info("Solicitando la lista de todos los pagos");
         return pagoRepository.findAll()
                     .stream()
                     .map(pagoMapper::toResponse)
@@ -35,23 +38,31 @@ public class PagoService {
     }
 
     public PagoResponse findById (Long id) {
+        log.info("Buscando pago con ID: {}", id);
         return pagoRepository.findById(id)
                     .map(pagoMapper::toResponse)
-                    .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado con id: " + id));
+                    .orElseThrow(() -> {
+                        log.warn("No se encontró el pago con ID: {}", id);
+                        return new ResourceNotFoundException("Pago no encontrado con id: " + id);
+                    });
     }
 
     public PagoResponse createPago(PagoRequest request) {
+        log.info("Iniciando creación de pago para pedido {} y usuario {}", request.getPedido_id(), request.getUsuario_id());
+
         UsuarioResponse usuario =
             usuarioClient.obtenerPorId(request.getUsuario_id());
 
         if (usuario == null) {
+            log.error("Error al crear pago: usuario {} no encontrado", request.getUsuario_id());
             throw new ResourceNotFoundException("Usuario no encontrado");
         }
-        
+
         PedidoResponse pedido =
             pedidoClient.obtenerPorId(request.getPedido_id());
 
         if (pedido == null) {
+            log.error("Error al crear pago: pedido {} no encontrado", request.getPedido_id());
             throw new ResourceNotFoundException("Pedido no encontrado");
         }
 
@@ -61,6 +72,7 @@ public class PagoService {
 
         Pago pagoGuardado = pagoRepository.save(pago);
 
+        log.info("Pago creado exitosamente con ID {}", pagoGuardado.getId());
         return pagoMapper.toResponse(pagoGuardado);
-    }    
+    }
 }
