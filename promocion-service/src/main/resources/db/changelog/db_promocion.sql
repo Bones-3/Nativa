@@ -12,7 +12,7 @@ CREATE TABLE promocion (
 );
 
 --changeset Fabián:002
-INSERT INTO promocion (id_promocion, codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, activo) VALUES
+INSERT INTO promocion (codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, activo) VALUES
 ('PROMO25', 'Descuento especial de invierno', 25, '2026-07-10', '2026-07-20', TRUE),
 ('BIENVENIDA', 'Bono por registro de nuevo usuario', 10, '2026-01-01', '2026-12-31', TRUE),
 ('CYBER2026', 'Descuento masivo Cyber Day', 50, '2026-11-01', '2026-11-03', TRUE),
