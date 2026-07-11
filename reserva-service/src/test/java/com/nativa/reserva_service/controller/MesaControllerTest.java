@@ -46,7 +46,7 @@ class MesaControllerTest {
 
         when(mesaService.getAllMesas()).thenReturn(List.of(mesa));
 
-        mockMvc.perform(get("/mesas/all"))
+        mockMvc.perform(get("/reserva/mesas/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.mesaResponseList").isArray())
                 .andExpect(jsonPath("$._embedded.mesaResponseList[0].id").value(1))
@@ -63,7 +63,7 @@ class MesaControllerTest {
 
         when(mesaService.getMesasDisponibles()).thenReturn(List.of(mesa));
 
-        mockMvc.perform(get("/mesas"))
+        mockMvc.perform(get("/reserva/mesas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.mesaResponseList").isArray())
                 .andExpect(jsonPath("$._embedded.mesaResponseList[0].id").value(1))
@@ -79,7 +79,7 @@ class MesaControllerTest {
 
         when(mesaService.getMesaById(1L)).thenReturn(mesa);
 
-        mockMvc.perform(get("/mesas/1"))
+        mockMvc.perform(get("/reserva/mesas/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.numero").value(1))
@@ -90,7 +90,7 @@ class MesaControllerTest {
         void getMesaById_shouldReturn404_whenNotFound() throws Exception {
         when(mesaService.getMesaById(99L)).thenThrow(new ResourceNotFoundException("Mesa no encontrada con id: 99"));
 
-        mockMvc.perform(get("/mesas/99"))
+        mockMvc.perform(get("/reserva/mesas/99"))
                 .andExpect(status().isNotFound());
 }
 
@@ -103,7 +103,7 @@ class MesaControllerTest {
 
         when(mesaService.createMesa(any(MesaRequest.class))).thenReturn(mesa);
 
-        mockMvc.perform(post("/mesas")
+        mockMvc.perform(post("/reserva/mesas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -127,7 +127,7 @@ class MesaControllerTest {
 
         when(mesaService.updateMesa(eq(1L), any(MesaRequest.class))).thenReturn(mesa);
 
-        mockMvc.perform(put("/mesas/1")
+        mockMvc.perform(put("/reserva/mesas/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -146,7 +146,7 @@ class MesaControllerTest {
         void deleteMesa_shouldReturnNoContent() throws Exception {
         doNothing().when(mesaService).deleteMesa(1L);
 
-        mockMvc.perform(delete("/mesas/1"))
+        mockMvc.perform(delete("/reserva/mesas/1"))
                 .andExpect(status().isNoContent());
 
         verify(mesaService).deleteMesa(1L);

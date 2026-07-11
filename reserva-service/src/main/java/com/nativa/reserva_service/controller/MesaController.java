@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/mesas")
+@RequestMapping("/reserva/mesas")
 @RequiredArgsConstructor
 public class MesaController {
 

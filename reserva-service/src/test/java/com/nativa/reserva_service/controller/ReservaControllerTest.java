@@ -53,7 +53,7 @@ void getAllReservas_shouldReturnList() throws Exception {
 
         when(reservaService.getAllReservas()).thenReturn(List.of(reserva));
 
-        mockMvc.perform(get("/reservas"))
+        mockMvc.perform(get("/reserva/reservas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.reservaResponseList").isArray())
                 .andExpect(jsonPath("$._embedded.reservaResponseList[0].id").value(1))
@@ -65,7 +65,7 @@ void getAllReservas_shouldReturnList() throws Exception {
 void getAllReservas_shouldReturnEmptyList() throws Exception {
         when(reservaService.getAllReservas()).thenReturn(List.of());
 
-        mockMvc.perform(get("/reservas"))
+        mockMvc.perform(get("/reserva/reservas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded").doesNotExist());
 }
@@ -83,7 +83,7 @@ void getReservaById_shouldReturnReserva() throws Exception {
 
         when(reservaService.getReservaById(1L)).thenReturn(reserva);
 
-        mockMvc.perform(get("/reservas/1"))
+        mockMvc.perform(get("/reserva/reservas/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombreCliente").value("Juan Pérez"))
@@ -94,7 +94,7 @@ void getReservaById_shouldReturnReserva() throws Exception {
 void getReservaById_shouldReturn404_whenNotFound() throws Exception {
         when(reservaService.getReservaById(99L)).thenThrow(new ResourceNotFoundException("Reserva no encontrada con id: 99"));
 
-        mockMvc.perform(get("/reservas/99"))
+        mockMvc.perform(get("/reserva/reservas/99"))
                 .andExpect(status().isNotFound());
 }
 
@@ -111,7 +111,7 @@ void createReserva_shouldReturnReserva() throws Exception {
 
         when(reservaService.createReserva(any(ReservaRequest.class))).thenReturn(reserva);
 
-        mockMvc.perform(post("/reservas")
+        mockMvc.perform(post("/reserva/reservas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -143,7 +143,7 @@ void updateReserva_shouldReturnUpdatedReserva() throws Exception {
 
         when(reservaService.updateReserva(eq(1L), any(ReservaRequest.class))).thenReturn(reserva);
 
-        mockMvc.perform(put("/reservas/1")
+        mockMvc.perform(put("/reserva/reservas/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -165,7 +165,7 @@ void updateReserva_shouldReturnUpdatedReserva() throws Exception {
 void cancelReserva_shouldReturnNoContent() throws Exception {
         doNothing().when(reservaService).cancelReserva(1L);
 
-        mockMvc.perform(delete("/reservas/1"))
+        mockMvc.perform(delete("/reserva/reservas/1"))
                 .andExpect(status().isNoContent());
 
         verify(reservaService).cancelReserva(1L);
