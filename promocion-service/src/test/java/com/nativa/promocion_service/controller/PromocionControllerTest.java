@@ -1,6 +1,5 @@
 package com.nativa.promocion_service.controller;
 
-import com.nativa.promocion_service.assemblers.PromocionModelAssembler;
 import com.nativa.promocion_service.dto.PromocionRequest;
 import com.nativa.promocion_service.dto.PromocionResponse;
 import com.nativa.promocion_service.exception.ResourceNotFoundException;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PromocionController.class)
-@Import(PromocionModelAssembler.class)
 @AutoConfigureMockMvc(addFilters = false)
 class PromocionControllerTest {
 
@@ -38,26 +35,28 @@ class PromocionControllerTest {
         @MockitoBean
         private JwtUtil jwtUtil;
 
+        private PromocionResponse buildPromocion() {
+                return PromocionResponse.builder()
+                        .id(1L)
+                        .codigo("CKD34L")
+                        .descripcion("Descuento solo valido por hoy")
+                        .porcentajeDescuento(BigDecimal.valueOf(25))
+                        .fechaInicio(LocalDate.of(2026, 8, 1))
+                        .fechaFin(LocalDate.of(2026, 9, 1))
+                        .activo(true)
+                        .build();
+        }
+
         @Test
         void getAllPromociones_shouldReturnList() throws Exception {
-        PromocionResponse promocion = PromocionResponse.builder()
-                .id(1L)
-                .codigo("CKD34L")
-                .descripcion("Descuento solo valido por hoy")
-                .porcentajeDescuento(BigDecimal.valueOf(25))
-                .fechaInicio(LocalDate.of(2026, 7, 10))
-                .fechaFin(LocalDate.of(2026, 7, 11))
-                .activo(true)
-                .build();
-
-        when(promocionService.getAllPromociones()).thenReturn(List.of(promocion));
+        when(promocionService.getAllPromociones()).thenReturn(List.of(buildPromocion()));
 
         mockMvc.perform(get("/promocion/promociones"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.promocionResponseList").isArray())
-                .andExpect(jsonPath("$._embedded.promocionResponseList[0].id").value(1))
-                .andExpect(jsonPath("$._embedded.promocionResponseList[0].comentario").value("Descuento solo valido por hoy"));
-        }       
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].codigo").value("CKD34L"));
+}
 
         @Test
         void getAllPromociones_shouldReturnEmptyList() throws Exception {
@@ -65,72 +64,54 @@ class PromocionControllerTest {
 
         mockMvc.perform(get("/promocion/promociones"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded").doesNotExist());
-        }
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+}
 
         @Test
         void getPromocionById_shouldReturnPromocion() throws Exception {
-        PromocionResponse promocion = PromocionResponse.builder()
-                .id(1L)
-                .codigo("CKD34L")
-                .descripcion("Descuento solo valido por hoy")
-                .porcentajeDescuento(BigDecimal.valueOf(25))
-                .fechaInicio(LocalDate.of(2026, 7, 10))
-                .fechaFin(LocalDate.of(2026, 7, 11))
-                .activo(true)
-                .build();
-
-        when(promocionService.getPromocionById(1L)).thenReturn(promocion);
+        when(promocionService.getPromocionById(1L)).thenReturn(buildPromocion());
 
         mockMvc.perform(get("/promocion/promociones/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.comentario").value("Descuento solo valido por hoy"))
-                .andExpect(jsonPath("$._links.self").exists());
-        }
+                .andExpect(jsonPath("$.descripcion").value("Descuento solo valido por hoy"));
+}
 
         @Test
         void getPromocionById_shouldReturn404_whenNotFound() throws Exception {
-        when(promocionService.getPromocionById(99L)).thenThrow(new ResourceNotFoundException("Rese\u00f1a no encontrada"));
+        when(promocionService.getPromocionById(99L)).thenThrow(new ResourceNotFoundException("Promocion no encontrada"));
 
         mockMvc.perform(get("/promocion/promociones/99"))
                 .andExpect(status().isNotFound());
-        }
+}
 
         @Test
         void createPromocion_shouldReturnPromocion() throws Exception {
-        PromocionResponse promocion = PromocionResponse.builder()
-                .id(1L)
-                .codigo("CKD34L")
-                .descripcion("Descuento solo valido por hoy")
-                .porcentajeDescuento(BigDecimal.valueOf(25))
-                .fechaInicio(LocalDate.of(2026, 7, 10))
-                .fechaFin(LocalDate.of(2026, 7, 11))
-                .activo(true)
-                .build();
-
-        when(promocionService.createPromocion(any(PromocionRequest.class))).thenReturn(promocion);
+        when(promocionService.createPromocion(any(PromocionRequest.class))).thenReturn(buildPromocion());
 
         mockMvc.perform(post("/promocion/promociones")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                "productoId": 1,
-                                "usuarioId": 1,
-                                "comentario": "Buen producto",
-                                "calificacion": 5
+                                "codigo": "CKD34L",
+                                "descripcion": "Descuento solo valido por hoy",
+                                "porcentajeDescuento": 25,
+                                "fechaInicio": "2026-08-01",
+                                "fechaFin": "2026-09-01",
+                                "activo": true
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.comentario").value("Buen producto"));
-        }
+                .andExpect(jsonPath("$.codigo").value("CKD34L"));
+}
 
         @Test
         void deletePromocion_shouldReturnNoContent() throws Exception {
         mockMvc.perform(delete("/promocion/promociones/1"))
                 .andExpect(status().isNoContent());
 
-        verify(promocionService).deletePromocion(any());
-        }
+        verify(promocionService).deletePromocion(1L);
+}
 }

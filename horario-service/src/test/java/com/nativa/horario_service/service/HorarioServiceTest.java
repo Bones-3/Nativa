@@ -103,7 +103,7 @@ class HorarioServiceTest {
 
         assertThatThrownBy(() -> horarioService.getHorarioById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Rese\u00f1a no encontrada");
+                .hasMessage("Horario no encontrado");
 
         verify(horarioRepository).findById(99L);
         verifyNoInteractions(horarioMapper);
@@ -128,9 +128,25 @@ class HorarioServiceTest {
     }
 
     @Test
-    void deleteHorario_shouldDeleteById() {
+    void deleteHorario_shouldDisableById() {
+        when(horarioRepository.findById(1L)).thenReturn(Optional.of(horario));
+
         horarioService.deleteHorario(1L);
 
-        verify(horarioRepository).deleteById(1L);
+        assertThat(horario.getCerrado()).isTrue();
+        verify(horarioRepository).findById(1L);
+        verify(horarioRepository).save(horario);
+    }
+
+    @Test
+    void deleteHorario_shouldThrowException_whenNotFound() {
+        when(horarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> horarioService.deleteHorario(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Horario no encontrado");
+
+        verify(horarioRepository).findById(99L);
+        verify(horarioRepository, never()).save(any());
     }
 }
