@@ -24,10 +24,18 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/reserva/mesas")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Mesa", description = "Operaciones relacionadas con las mesas")
 public class MesaController {
 
     private final MesaService mesaService;
@@ -35,6 +43,11 @@ public class MesaController {
 
 
 
+    @Operation(summary = "Obtener todas las mesas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de todas las mesas obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = MesaResponse.class)))
+    })
     @GetMapping("/all")
     public ResponseEntity<CollectionModel<EntityModel<MesaResponse>>> getAllMesas() {
         log.info("Petición HTTP GET recibida en /reserva/mesas/all - Listando todas las mesas");
@@ -49,6 +62,11 @@ public class MesaController {
                 linkTo(methodOn(MesaController.class).getAllMesas()).withSelfRel()));
     }
 
+    @Operation(summary = "Obtener mesas disponibles")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de mesas disponibles obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = MesaResponse.class)))
+    })
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<MesaResponse>>> getMesasDisponibles() {
         log.info("Petición HTTP GET recibida en /reserva/mesas - Listando mesas disponibles");
@@ -63,6 +81,12 @@ public class MesaController {
                 linkTo(methodOn(MesaController.class).getMesasDisponibles()).withSelfRel()));
     }
 
+    @Operation(summary = "Obtener mesa por id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Mesa encontrada",
+            content = @Content(schema = @Schema(implementation = MesaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Mesa no encontrada", content = @Content)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<MesaResponse>>getMesaById(@PathVariable Long id) {
         log.info("Petición HTTP GET recibida en /reserva/mesas/{} - Buscando mesa", id);
@@ -73,6 +97,11 @@ public class MesaController {
         return ResponseEntity.ok(mesa);
     }
 
+    @Operation(summary = "Crear mesa")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Mesa creada exitosamente",
+            content = @Content(schema = @Schema(implementation = MesaResponse.class)))
+    })
     @PostMapping
     public ResponseEntity<MesaResponse> createMesa(@Valid @RequestBody MesaRequest request) {
         log.info("Petición HTTP POST recibida en /reserva/mesas - Creando mesa número {}", request.getNumero());
@@ -83,6 +112,12 @@ public class MesaController {
         return ResponseEntity.ok(creada);
     }
 
+    @Operation(summary = "Actualizar mesa")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Mesa actualizada exitosamente",
+            content = @Content(schema = @Schema(implementation = MesaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Mesa no encontrada", content = @Content)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<MesaResponse> updateMesa(@PathVariable Long id, @Valid @RequestBody MesaRequest request) {
         log.info("Petición HTTP PUT recibida en /reserva/mesas/{} - Actualizando mesa", id);
@@ -93,6 +128,11 @@ public class MesaController {
         return ResponseEntity.ok(actualizada);
     }
 
+    @Operation(summary = "Eliminar mesa")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Mesa eliminada exitosamente", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Mesa no encontrada", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMesa(@PathVariable Long id) {
         log.info("Petición HTTP DELETE recibida en /reserva/mesas/{} - Eliminando mesa", id);

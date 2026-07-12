@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +21,31 @@ import com.nativa.horario_service.service.HorarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 
 @RestController
 @Component
-@RequestMapping("/horarioV2/horarios")
+@RequestMapping("/horario/horarios")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Horario V2", description = "Operaciones HATEOAS relacionadas con los horarios")
 public class HorarioControllerV2 {
     private final HorarioService horarioService;
     private final HorarioModelAssembler assembler;
 
-    @GetMapping()
+    @Operation(summary = "Obtener todos los horarios")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de horarios obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = HorarioResponse.class)))
+    })
+    @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<CollectionModel<EntityModel<HorarioResponse>>> getAllHorarios() {
         log.info("Petición HTTP GET recibida en /horarioV2/horarios - Listando horarios");
 
@@ -45,7 +59,13 @@ public class HorarioControllerV2 {
                 linkTo(methodOn(HorarioControllerV2.class).getAllHorarios()).withSelfRel()));
     }
 
-    @GetMapping("/{id}")
+    @Operation(summary = "Obtener horario por id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Horario encontrado",
+            content = @Content(schema = @Schema(implementation = HorarioResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Horario no encontrado", content = @Content)
+    })
+    @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<EntityModel<HorarioResponse>> getHorarioById(@PathVariable Long id) {
         log.info("Petición HTTP GET recibida en /horarioV2/horarios/{} - Buscando horario", id);
 

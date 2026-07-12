@@ -25,15 +25,28 @@ import com.example.inventario.service.InventarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/inventario")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Inventario", description = "Operaciones relacionadas con el inventario")
 public class InventarioController {
 
     private final InventarioService inventarioService;
     private final InventarioModelAssembler assembler;
 
+    @Operation(summary = "Crear inventario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Inventario creado exitosamente",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class)))
+    })
     @PostMapping
     public ResponseEntity<InventarioResponse> crear(@RequestBody InventarioRequest request) {
         log.info("Petición HTTP POST recibida en /inventario - Creando inventario para producto {}", request.getProductoId());
@@ -44,6 +57,11 @@ public class InventarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
+    @Operation(summary = "Obtener todos los inventarios")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de inventarios obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class)))
+    })
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<InventarioResponse>>> obtenerTodos() {
         log.info("Petición HTTP GET recibida en /inventario - Listando inventarios");
@@ -58,6 +76,12 @@ public class InventarioController {
                 linkTo(methodOn(InventarioController.class).obtenerTodos()).withSelfRel()));
     }
 
+    @Operation(summary = "Obtener inventario por id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Inventario encontrado",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado", content = @Content)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<InventarioResponse>> obtenerPorId(@PathVariable Long id) {
         log.info("Petición HTTP GET recibida en /inventario/{} - Buscando inventario", id);
@@ -68,6 +92,12 @@ public class InventarioController {
         return ResponseEntity.ok(assembler.toModel(inventario));
     }
 
+    @Operation(summary = "Obtener inventario por producto")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Inventario encontrado",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado", content = @Content)
+    })
     @GetMapping("/producto/{productoId}")
     public ResponseEntity<EntityModel<InventarioResponse>> obtenerPorProductoId(@PathVariable Long productoId) {
         log.info("Petición HTTP GET recibida en /inventario/producto/{} - Buscando inventario", productoId);
@@ -78,6 +108,11 @@ public class InventarioController {
         return ResponseEntity.ok(assembler.toModel(inventario));
     }
 
+    @Operation(summary = "Obtener inventarios con stock bajo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de inventarios con stock bajo",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class)))
+    })
     @GetMapping("/stock/bajo")
     public ResponseEntity<CollectionModel<EntityModel<InventarioResponse>>> obtenerStockBajo() {
         log.info("Petición HTTP GET recibida en /inventario/stock/bajo - Listando inventarios con stock bajo");
@@ -92,6 +127,12 @@ public class InventarioController {
                 linkTo(methodOn(InventarioController.class).obtenerStockBajo()).withSelfRel()));
     }
 
+    @Operation(summary = "Actualizar inventario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Inventario actualizado exitosamente",
+            content = @Content(schema = @Schema(implementation = InventarioResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado", content = @Content)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<InventarioResponse> actualizar(@PathVariable Long id, @RequestBody InventarioRequest request) {
         log.info("Petición HTTP PUT recibida en /inventario/{} - Actualizando inventario", id);
@@ -102,6 +143,11 @@ public class InventarioController {
         return ResponseEntity.ok(actualizado);
     }
 
+    @Operation(summary = "Eliminar inventario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Inventario eliminado exitosamente", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         log.info("Petición HTTP DELETE recibida en /inventario/{} - Eliminando inventario", id);
