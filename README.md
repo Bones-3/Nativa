@@ -26,7 +26,9 @@ Cliente → API Gateway (8080)
                ├── pago-service (8086)       → Pagos
                ├── inventario-service (8091) → Inventario
                ├── reserva-service (8082)    → Reservas
-               └── resena-service (8092)     → Reseñas
+               ├── resena-service (8092)     → Reseñas
+               ├── horario-service (8095)    → Horarios
+               └── promocion-service (8096)  → Promociones
 
 Todos los servicios se registran en → Eureka Server (8761)
 Todos los servicios persisten en   → MySQL (3306)
@@ -46,10 +48,12 @@ Nativa/
 ├── api-gateway/                 # Spring Cloud Gateway (WebFlux)
 ├── auth-service/                # Autenticación JWT
 ├── eureka-service/              # Service Discovery (Eureka Server)
+├── horario-service/             # Horarios
 ├── inventario-service/          # Inventario / Stock
 ├── menu-service/                # Menú y productos
 ├── pago-service/                # Pagos
 ├── pedido-service/              # Pedidos
+├── promocion-service/           # Promociones
 ├── reserva-service/             # Reservas
 ├── resena-service/              # Reseñas
 └── usuario-service/             # Usuarios
@@ -138,6 +142,8 @@ mvn spring-boot:run
 | `/api/pedido/**` | pedido-service (8084) |
 | `/api/usuario/**` | usuario-service (8083) |
 | `/api/resena/**` | resena-service (8092) |
+| `/api/horario/**` | horario-service (8095) |
+| `/api/promocion/**` | promocion-service (8096) |
 
 ## Swagger UI
 
@@ -154,6 +160,8 @@ Cada servicio expone su documentación OpenAPI:
 | inventario-service | `http://localhost:8091/swagger-ui.html` |
 | reserva-service | `http://localhost:8082/swagger-ui.html` |
 | resena-service | `http://localhost:8092/swagger-ui.html` |
+| horario-service | `http://localhost:8095/swagger-ui.html` |
+| promocion-service | `http://localhost:8096/swagger-ui.html` |
 
 ## Correcciones conocidas
 
@@ -189,29 +197,34 @@ cd eureka-service && mvn clean package -DskipTests
 
 ## Comandos útiles
 
-# para eliminar el cache
-docker builder prune -f    
+```bash
+# Eliminar cache
+docker builder prune -f
 
-# para levantar los docker
-docker compose up --build     
+# Levantar los docker
+docker compose up --build
+
 # Ver estado de los contenedores
 docker compose ps
 
 # Ver logs en tiempo real
 docker compose logs -f
 
-# Cuenta
-{
-    "correo": "vcortez6565@gmail.com",
-    "password": "87876565Vc."
-}
-
-# ver logs especificos
-docker compose logs pago-service                                                                              
+# Ver logs de un servicio específico
+docker compose logs pago-service
 
 # Acceder a MySQL
 docker exec -it mysql-container mysql -u root -prootpassword
 
 # Ver servicios registrados en Eureka
 curl http://localhost:8761/eureka/apps
+```
+
+## Cuenta de prueba
+
+```json
+{
+    "correo": "vcortez6565@gmail.com",
+    "password": "87876565Vc."
+}
 ```
