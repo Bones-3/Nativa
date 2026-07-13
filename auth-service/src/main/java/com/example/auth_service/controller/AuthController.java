@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.auth_service.dto.LoginRequest;
+import com.example.auth_service.dto.RegisterRequest;
 import com.example.auth_service.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +35,9 @@ public class AuthController {
         @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String correo = body.get("correo");
-        String password = body.get("password");
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        String correo = request.getCorreo();
+        String password = request.getPassword();
         log.info("Petición HTTP POST recibida en /auth/login - Autenticando correo: {}", correo);
 
         String token = authService.login(correo, password);
@@ -60,9 +63,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "Usuario ya existe o correo inválido", content = @Content)
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
-        String correo = body.get("correo");
-        String password = body.get("password");
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        String correo = request.getCorreo();
+        String password = request.getPassword();
         log.info("Petición HTTP POST recibida en /auth/register - Registrando correo: {}", correo);
 
         String resultado = authService.register(correo, password);

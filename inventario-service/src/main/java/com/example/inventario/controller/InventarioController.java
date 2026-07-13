@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/inventario")
@@ -48,7 +49,7 @@ public class InventarioController {
             content = @Content(schema = @Schema(implementation = InventarioResponse.class)))
     })
     @PostMapping
-    public ResponseEntity<InventarioResponse> crear(@RequestBody InventarioRequest request) {
+    public ResponseEntity<InventarioResponse> crear(@Valid @RequestBody InventarioRequest request) {
         log.info("Petición HTTP POST recibida en /inventario - Creando inventario para producto {}", request.getProductoId());
 
         InventarioResponse creado = inventarioService.crearInventario(request);
@@ -134,7 +135,7 @@ public class InventarioController {
         @ApiResponse(responseCode = "404", description = "Inventario no encontrado", content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<InventarioResponse> actualizar(@PathVariable Long id, @RequestBody InventarioRequest request) {
+    public ResponseEntity<InventarioResponse> actualizar(@PathVariable Long id, @Valid @RequestBody InventarioRequest request) {
         log.info("Petición HTTP PUT recibida en /inventario/{} - Actualizando inventario", id);
 
         InventarioResponse actualizado = inventarioService.actualizar(id, request);
