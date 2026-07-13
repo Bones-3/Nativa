@@ -16,9 +16,9 @@ public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
-                        .title("Reseña Service API")
+                        .title("Horario Service API")
                         .version("1.0")
-                        .description("API para gestionar los comentarios del menú de un restaurante"))
+                        .description("API para gestionar los horarios del restaurante"))
         .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
         .components(new Components()
                 .addSecuritySchemes(securitySchemeName,

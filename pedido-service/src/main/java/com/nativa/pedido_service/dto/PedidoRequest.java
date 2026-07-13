@@ -13,6 +13,6 @@ public class PedidoRequest {
     private Long usuarioId;
 
     @NotBlank(message = "El tipo de entrega es obligatorio")
-    @Pattern(regexp = "DELIVERY|RETIRO", message = "El tipo de entrega debe ser DELIVERY o RETIRO")
+    @Pattern(regexp = "PARA SERVIR|RETIRO", message = "El tipo de entrega debe ser PARA SERVIR o RETIRO")
     private String tipoEntrega;
 }
