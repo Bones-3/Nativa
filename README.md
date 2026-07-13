@@ -26,9 +26,7 @@ Cliente → API Gateway (8080)
                ├── pago-service (8086)       → Pagos
                ├── inventario-service (8091) → Inventario
                ├── reserva-service (8082)    → Reservas
-               ├── resena-service (8092)     → Reseñas
-               ├── horario-service (8095)    → Horarios
-               └── promocion-service (8096)  → Promociones
+               └── resena-service (8092)     → Reseñas
 
 Todos los servicios se registran en → Eureka Server (8761)
 Todos los servicios persisten en   → MySQL (3306)
@@ -56,6 +54,8 @@ Nativa/
 ├── promocion-service/           # Promociones
 ├── reserva-service/             # Reservas
 ├── resena-service/              # Reseñas
+├── promocion-service/            # Promociones
+├── horario-service/               # Horarios
 └── usuario-service/             # Usuarios
 ```
 
@@ -160,8 +160,6 @@ Cada servicio expone su documentación OpenAPI:
 | inventario-service | `http://localhost:8091/swagger-ui.html` |
 | reserva-service | `http://localhost:8082/swagger-ui.html` |
 | resena-service | `http://localhost:8092/swagger-ui.html` |
-| horario-service | `http://localhost:8095/swagger-ui.html` |
-| promocion-service | `http://localhost:8096/swagger-ui.html` |
 
 ## Correcciones conocidas
 

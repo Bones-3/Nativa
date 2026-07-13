@@ -30,21 +30,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @Component
 @RequestMapping("/resena/resenas")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Resena", description = "Operaciones relacionadas con las reseñas")
+@Tag(name = "Reseñas", description = "Gestión de comentarios y calificaciones de productos")
 public class ResenaController {
     private final ResenaService resenaService;
     private final ResenaModelAssembler assembler;
 
-    @Operation(summary = "Obtener todas las reseñas")
+    @Operation(summary = "Listar reseñas", description = "Retorna todas las reseñas registradas")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de reseñas obtenida exitosamente",
-            content = @Content(schema = @Schema(implementation = ResenaResponse.class)))
+        @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente"),
+        @ApiResponse(responseCode = "401", description = "Token JWT inválido o ausente")
     })
     @GetMapping()
     public ResponseEntity<CollectionModel<EntityModel<ResenaResponse>>> getAllResenas() {
@@ -60,11 +61,11 @@ public class ResenaController {
                 linkTo(methodOn(ResenaController.class).getAllResenas()).withSelfRel()));
     }
 
-    @Operation(summary = "Obtener reseña por id")
+    @Operation(summary = "Buscar reseña por ID", description = "Retorna una reseña según su identificador")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Reseña encontrada",
-            content = @Content(schema = @Schema(implementation = ResenaResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Reseña no encontrada", content = @Content)
+        @ApiResponse(responseCode = "200", description = "Reseña encontrada"),
+        @ApiResponse(responseCode = "404", description = "Reseña no encontrada"),
+        @ApiResponse(responseCode = "401", description = "Token JWT inválido o ausente")
     })
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<ResenaResponse>> getResenaById(@PathVariable Long id) {
@@ -76,13 +77,14 @@ public class ResenaController {
         return ResponseEntity.ok(resena);
     }
 
-    @Operation(summary = "Crear reseña")
+    @Operation(summary = "Crear reseña", description = "Registra una nueva reseña de un producto")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Reseña creada exitosamente",
-            content = @Content(schema = @Schema(implementation = ResenaResponse.class)))
+        @ApiResponse(responseCode = "200", description = "Reseña creada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos en el request"),
+        @ApiResponse(responseCode = "401", description = "Token JWT inválido o ausente")
     })
     @PostMapping()
-    public ResponseEntity<ResenaResponse> createResena(@RequestBody ResenaRequest request){
+    public ResponseEntity<ResenaResponse> createResena(@Valid @RequestBody ResenaRequest request){
         log.info("Petición HTTP POST recibida en /resena/resenas - Creando reseña para producto {}", request.getProductoId());
 
         ResenaResponse creada = resenaService.createResena(request);
@@ -91,10 +93,10 @@ public class ResenaController {
         return ResponseEntity.ok(creada);
     }
 
-    @Operation(summary = "Eliminar reseña")
+    @Operation(summary = "Eliminar reseña", description = "Elimina una reseña por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Reseña eliminada exitosamente", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Reseña no encontrada", content = @Content)
+        @ApiResponse(responseCode = "204", description = "Reseña eliminada exitosamente"),
+        @ApiResponse(responseCode = "401", description = "Token JWT inválido o ausente")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> resenaPedido(@PathVariable Long id){
